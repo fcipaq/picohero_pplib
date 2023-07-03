@@ -1,0 +1,45 @@
+;
+; pplib - a library for the Pico Hero handheld
+;
+; Copyright (C) 2023 Daniel Kammer (daniel.kammer@web.de)
+;
+; This program is free software: you can redistribute it and/or modify
+; it under the terms of the GNU General Public License as published by
+; the Free Software Foundation, either version 3 of the License, or
+; (at your option) any later version.
+;
+; This program is distributed in the hope that it will be useful,
+; but WITHOUT ANY WARRANTY; without even the implied warranty of
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+; GNU General Public License for more details.
+;
+; You should have received a copy of the GNU General Public License
+; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+;
+;
+
+; 8 bit parallel data transmission to LCD (double pixel)
+
+.program lcd_output
+
+.side_set 1 opt
+
+    .wrap_target
+public tx_dat:
+    out    x, 8            side 0   ; OSR is auto pulled, shift 8 bits from OSR, WR set to LOW
+    mov    pins, x
+    out    y, 8            side 1
+    mov    pins, y         side 0
+    nop                    side 1
+    mov    pins, x         side 0
+    nop                    side 1
+    mov    pins, y         side 0
+    jmp    tx_dat          side 1   ; repeat, WR set to HIGH
+public tx_cmd:
+    out    pins, 32        side 0   ; OSR is auto pulled, shift 32 bits from OSR, writing only the 8 LSB (?) to pins
+    out    null, 24        side 1   ; discard the remaining 24 bits (only 8 bits are valid, the rest is just filled with zeros)
+    .wrap
+
+% c-sdk {
+
+%}
