@@ -1,4 +1,4 @@
-### pplib - A library for the ~~Pico Pad~~ *Pico Hero* (an open source handheld based on the Raspberry Pi Pico) for Arduino
+# pplib - A library for the ~~Pico Pad~~ *Pico Hero* (an open source handheld based on the Raspberry Pi Pico) for Arduino
 
 This is the result of a private project to build a handheld gaming device based on the
 *Raspberry Pi Pico*. I know there are a bunch of those out there but I wanted to design my
@@ -36,7 +36,7 @@ Parts (older version without SD card)
 
 I will add more repositories, tools and details in time. Also, I am going to add Gerber files and schematics as well as STL files for printing/building the case. Consider this as preview. Please be patient, I am going at full speed.
 
-# Specs:
+## Specs:
 
 - 3.2 inch LCD screen with 320x240 resolution with parallel interface to the RP2040
 - analog control stick, 3 buttons and on/off switch
@@ -51,7 +51,7 @@ Now, the device features a simple library which does the hardware handling. The 
 
 The whole library is built around Earle Philhower's Raspberry Pi Pico Arduino core (no further dependencies are involve). 
 
-# Core features:
+## Core features:
 
 - screen: 16 bit and 8 bit (must choose at compile time) buffers, full and half resolution panel fitter (nearest neighbor and experimental linear filter)
 - fast blitter (using the RP2040 interpolator) with zooming/rotation
@@ -59,7 +59,7 @@ The whole library is built around Earle Philhower's Raspberry Pi Pico Arduino co
 - sound library for sound output (8 bit PCM up to 22000 Hz) with four channels for mixing
 - font library with the ability to import true type fonts (FontEditor written by H. Reddmann)
 
-# Requirements
+## Requirements
 
 RAM
 
@@ -76,28 +76,28 @@ RAM
 - DMA
   - 2 DMA channels (2 additional DMA channels when using 8 bit and custom color palette)
 
-### Installation
+# Installation
 
 Place the *pplib* directory into your Arduino libraries folder. Next, install Earle Philhower's Raspberry Pi Pico Arduino core. The library is meant to be used with Arduino. It is written in non-object-oriented C++. At first you need to setup the hardware (16 bit or 8 bit color depth, resolution, panel fitter). See setup.h for details. Your sketch has then to call pplInit() right at the beginning. 
 That’s it. You may now build the examples.
 
-### Library description:
+# Library description:
 
-# Types
+## Types
 
 // TODO
 
 
 ## Functions
 
-# pplib
+### pplib
 
 `int pplInit()`
 
 This function is called to initialize all the hardware on the *Pico Hero*. It’s supposed to be called right at the beginning of `setup()`. This also does the bootloader handling (press all three buttons when powering up the *Pico Hero* to enter bootloader mode) – so it’s very important. 
 
 
-# gbuffers
+### gbuffers
 
 All graphics are rendered into objects called graphics buffers (or gbuffers). Those contain the information about the image size and color depth as well as a pointer to the actual image data.
 The functions are overloaded to work with 8 bit as well as 16 bit color depths.
@@ -124,8 +124,7 @@ Returns the data pointer of a buffer object.
 Frees the data memory of a buffer object.
 
 
-
-# lcdcom
+### lcdcom
 
 This is the hardware layer to interface with the LCD
 
@@ -161,7 +160,7 @@ Disables the tearing signal.
 Returns the current state of the tearing signal. 
 
 
-# sound
+### sound
 
 `int  snd_enque_buf(uint8_t *ext_buf, uint32_t buffersize, uint8_t num_snd_channel, bool blocking) `
 
@@ -189,7 +188,7 @@ Sets the playback frequency.
 Sets the volume level (from 0 to 5)
 
 
-# blitter
+### blitter
 
 The blitter blits a source buffer to a destination buffer. The buffers may be different in size but must be of the same color depth. There is only one (overloaded) function.
 
@@ -233,7 +232,7 @@ void blit_buf(coord_t kx,		// kx: x-coord where to blit the of CENTER of the ima
 Blits a buffer to another buffer at the position *kx*, *ky*, zooms it in horizontal direction with the factor of *zoom_x* in vertical direction with the factor of *zoom_y*.  *flip_x* and *flip_y* state if the buffer shall be flipped (0 = no flipping, 1 = flipping). Alpha states the transparent color (BLIT_NO_ALPHA for no transparency)
 
 
-# tile map
+### tile map
 
 Tiles maps are used to build environments out of tiles (in order to save storage). Tile maps consist of two components: a tile map that states which tile has to be places where. And the tile data containing the actual image information. If a tile is repeated multiple times, then memory has been saved.
 
