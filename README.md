@@ -12,25 +12,25 @@ own for some reasons:
 
 And this is what it looks like:
 
-![Pico Hero picture 1](https://raw.githubusercontent.com/fcipaq/picohero_pplib/images/front1.jpg)
-![Pico Hero picture 1](https://raw.githubusercontent.com/fcipaq/picohero_pplib/images/front3.jpg)
+![Pico Hero picture 1](https://raw.githubusercontent.com/fcipaq/picohero_pplib/main/images/front1.jpg)
+![Pico Hero picture 1](https://raw.githubusercontent.com/fcipaq/picohero_pplib/main/images/front3.jpg)
 
 Front view
 
-![Pico Hero picture 1](https://raw.githubusercontent.com/fcipaq/picohero_pplib/images/back.jpg)
+![Pico Hero picture 1](https://raw.githubusercontent.com/fcipaq/picohero_pplib/main/images/back.jpg)
 
 Back view
 
-![Pico Hero picture 1](https://raw.githubusercontent.com/fcipaq/picohero_pplib/images/top.jpg)
+![Pico Hero picture 1](https://raw.githubusercontent.com/fcipaq/picohero_pplib/main/images/top.jpg)
 
 
 Top view
 
-![Pico Hero picture 1](https://raw.githubusercontent.com/fcipaq/picohero_pplib/images/parts.jpg)
+![Pico Hero picture 1](https://raw.githubusercontent.com/fcipaq/picohero_pplib/main/images/parts.jpg)
 
 Parts (older version without SD card)
 
-![Pico Hero picture 1](https://raw.githubusercontent.com/fcipaq/picohero_pplib/images/emulator.jpg)
+![Pico Hero picture 1](https://raw.githubusercontent.com/fcipaq/picohero_pplib/main/images/emulator.jpg)
 
 *Pico Hero* running modified Sega Mega Drive emulator by bzhxx (https://github.com/bzhxx/gwenesis)
 
