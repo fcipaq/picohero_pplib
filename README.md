@@ -113,7 +113,7 @@ Returns the height of a buffer
 
 `int gbuf_alloc(gbuffer8_t* buf, uint16_t width, uint16_t height, uint8_t colors) `
 
-Allocates memory to an already existing graphics buffer object. Returns *BUF_ERR_NO_RAM* on failure otherwise * BUF_SUCCESS*
+Allocates memory to an already existing graphics buffer object. Returns *BUF_ERR_NO_RAM* on failure otherwise *BUF_SUCCESS*
 
 `uint8_t*  gbuf_get_dat_ptr(gbuffer8_t buf)`
 
@@ -194,23 +194,23 @@ The blitter blits a source buffer to a destination buffer. The buffers may be di
 
 ```
 void blit_buf(coord_t kx,    // coordinates of upper left corner
-			  coord_t ky,    
-			  gbuffer_t src, // source buffer
-			  gbuffer_t dst, // destination buffer
-			  int32_t alpha)
+              coord_t ky,    
+              gbuffer_t src, // source buffer
+              gbuffer_t dst, // destination buffer
+              int32_t alpha)
 ```
 
 Blits a buffer to another buffer at the position *kx*, *ky*. Alpha states the transparent color (BLIT_NO_ALPHA for no transparency)
 
 
 ```
-void blit_buf(coord_t kx,		// kx: x-coord where to blit the of CENTER of the image
-			  coord_t ky,		// ky: y-coord where to blit the of CENTER of the image
-			  float zoom,			// zoom: zoom factor (same in both directions) 
-		      float rot,             // rot: rotation of the image (in rad)
-			  int32_t alpha,         // alpha: color which is NOT being drawn (BLIT_NO_ALPHA for no transparency)
-			  gbuffer_t src,   // sprite: pointer to source buffer
-			  gbuffer_t dst)     // fb: pointer to destination buffer
+void blit_buf(coord_t kx,    // x-coord where to blit the of CENTER of the image
+              coord_t ky,    // y-coord where to blit the of CENTER of the image
+              float zoom,    // zoom factor (same in both directions) 
+              float rot,     // rotation of the image (in rad)
+              int32_t alpha, // color which is NOT being drawn (BLIT_NO_ALPHA for no transparency)
+              gbuffer_t src, // pointer to source buffer
+              gbuffer_t dst) // pointer to destination buffer
 ```
 
 Blits a buffer to another buffer at the position *kx*, *ky*, zooms it at the factor of *zoom* and rotates is at the angle of *rot*. Alpha states the transparent color (BLIT_NO_ALPHA for no transparency)
@@ -218,15 +218,15 @@ Blits a buffer to another buffer at the position *kx*, *ky*, zooms it at the fac
 
 
 ```
-void blit_buf(coord_t kx,		// kx: x-coord where to blit the of CENTER of the image
-			  coord_t ky,		// ky: y-coord where to blit the of CENTER of the image
-			  float zoom_x,			// zoom_x: zoom factor in x direction
-			  float zoom_y,			// zoom_y: zoom factor in y direction
-			  uint8_t flip_x,		// flip_x: whether to flip horizontally (1 means flip, 0 means
-			  uint8_t flip_y,		// flip_y: whether to flip vertically
-			  int32_t alpha,         // alpha: color which is NOT being drawn (BLIT_NO_ALPHA for no transparency)
-			  gbuffer_t src,   // sprite: pointer to source buffer
-			  gbuffer_t dst)      // fb: pointer to destination buffer
+void blit_buf(coord_t kx,     // x-coord where to blit the of CENTER of the image
+              coord_t ky,     // y-coord where to blit the of CENTER of the image
+              float zoom_x,   // zoom factor in x direction
+              float zoom_y,   // zoom factor in y direction
+              uint8_t flip_x, // whether to flip horizontally (1 means flip, 0 means
+              uint8_t flip_y, // whether to flip vertically
+              int32_t alpha,  // color which is NOT being drawn (BLIT_NO_ALPHA for no transparency)
+              gbuffer_t src,  // pointer to source buffer
+              gbuffer_t dst)  // pointer to destination buffer
 ```
 
 Blits a buffer to another buffer at the position *kx*, *ky*, zooms it in horizontal direction with the factor of *zoom_x* in vertical direction with the factor of *zoom_y*.  *flip_x* and *flip_y* state if the buffer shall be flipped (0 = no flipping, 1 = flipping). Alpha states the transparent color (BLIT_NO_ALPHA for no transparency)
@@ -238,17 +238,17 @@ Tiles maps are used to build environments out of tiles (in order to save storage
 
 
 ```
-void blit_tile_map_mode7(coord_t kx,  // start in fb window x
-					     coord_t ky,  // start in fb window y
-					     coord_t w,   // window width
-					     coord_t h,   // window height
-					     float px,  // translation within window
-					     float py,  // translation within window
-					     float pz,  // translation within window
-					     float pr,  // rotation within window
-					     tile_map_t map_data,
-					     tile_data_t tile_set,
-					     gbuffer_t fb)
+void blit_tile_map_mode7(coord_t kx,           // start in fb window x
+                         coord_t ky,           // start in fb window y
+                         coord_t w,            // window width
+                         coord_t h,            // window height
+                         float px,             // translation within window
+                         float py,             // translation within window
+                         float pz,             // translation within window
+                         float pr,             // rotation within window
+                         tile_map_t map_data,  // map data
+                         tile_data_t tile_set, // tile data
+                         gbuffer_t buf)        // pointer to destination buffer
 ```
 
 This blits a tile map in SNES-mode-7-style. A pseudo 3D affine transformation. Since the RP2040 interpolator does most of the work this works with a frame rate sufficient for full screen display.
@@ -257,20 +257,20 @@ This blits a tile map in SNES-mode-7-style. A pseudo 3D affine transformation. S
 
 
 ```
-void blit_tile_map_rot(coord_t kx,  // start in fb window x
-					   coord_t ky,  // start in fb window y
-					   coord_t w,   // window width
-					   coord_t h,   // window height
-					   coord_t px,  // translation within window
-					   coord_t py,  
-					   coord_t pivot_x,  // pivot point (in screen/buffer coords, 0/0 is upper left corner)
-					   coord_t pivot_y,  
-					   float rot,
-					   float zoom_x,
-					   float zoom_y,
-					   tile_map_t map_data,
-					   tile_data_t tile_set,
-					   gbuffer_t buf)
+void blit_tile_map_rot(coord_t kx,            // start in fb window x
+                       coord_t ky,            // start in fb window y
+                       coord_t w,             // window width
+                       coord_t h,             // window height
+                       coord_t px,            // translation within window
+                       coord_t py,  
+                       coord_t pivot_x,       // pivot point (in screen/buffer coords, 0/0 is upper left corner)
+                       coord_t pivot_y,  
+                       float rot,             // angle
+                       float zoom_x,          // zoom in horizontal direction
+                       float zoom_y,          // zoom in vertical direction
+                       tile_map_t map_data,   // map data
+                       tile_data_t tile_set,  // tile data
+                       gbuffer_t buf)         // pointer to destination buffer
 ```
 
 This blits a tile map in top down style. Since the RP2040 interpolator does most of the work this works with a frame rate sufficient for full screen display. See *Pico Racer* example.
