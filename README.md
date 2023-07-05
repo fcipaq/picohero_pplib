@@ -234,9 +234,9 @@ Blits a buffer to another buffer at the position *kx*, *ky*, zooms it in horizon
 
 ### tile map
 
-Tiles maps are used to build environments out of tiles (in order to save storage). Tile maps consist of two components: a tile map that states which tile has to be places where. And the tile data containing the actual image information. If a tile is repeated multiple times, then memory has been saved.
+Tiles maps are used to build environments out of tiles (in order to save storage). Tile maps consist of two components: a tile map that states which tile has to be placed where. And the tile data containing the actual image information. If a tile is repeated multiple times, then memory has been saved.
 
-Tile maps are basically 8 bit arrays and that means there is a maximum number of 256 different tiles per map allowed. Every byte of the map array holds an number that represents a certain tile. The tiles themselves may be of 8 or 16 bit color depth. A constraints introduced by the way the lookup is done by the interpolator is that the width and the height of a tile must be a power of 2 as does the width and the height of the map. For example a map may be 128 by 64 tiles. And each of the tiles may be of the size 64 by 32 pixels.
+Tile map objects (tile_map_t) contain an 8 bit array and that means there is a maximum number of 256 different tiles per map allowed. Every byte of the map array holds an number that represents a certain tile. A tile data object is very similar to a graphics buffer but also contains the number of tiles which allows to store the data of multiple tiles in a single tile_data_t object. The tiles themselves may be of 8 or 16 bit color depth. A constraints introduced by the way the lookup is done by the interpolator is that the width and the height of a tile must be a power of 2 as does the width and the height of the map. For example a map may be 128 by 64 tiles. And each of the tiles may be of the size 64 by 32 pixels.
 
 
 ```
