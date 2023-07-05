@@ -105,5 +105,5 @@ int pwr_init()
 {
   pinMode(PIN_BAT_ADC, INPUT);
   
-  return true;
+  return 0;
 }

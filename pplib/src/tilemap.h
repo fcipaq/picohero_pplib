@@ -21,34 +21,36 @@
 #ifndef TILEMAP_H
 #define TILEMAP_H
 
-#define blit_tile_map(kx, ky, w, h, px, py, zoom_x, zoom_y, map_data, tile_set, fb) \
-        blit_tile_map_rot(kx, ky, w, h, px, py, 0, 0, 0, zoom_x, zoom_y, map_data, tile_set, fb)
+#define tile_blit(kx, ky, w, h, px, py, zoom_x, zoom_y, map_data, tile_set, alpha, fb) \
+        tile_blit_rot(kx, ky, w, h, px, py, 0, 0, 0, zoom_x, zoom_y, map_data, tile_set, alpha, fb)
 	
-void blit_tile_map_rot(coord_t kx,  // start in fb window x
-					   coord_t ky,  // start in fb window y
-					   coord_t w,   // window width
-					   coord_t h,   // window height
-					   coord_t px,  // translation within window
-					   coord_t py,  
-					   coord_t pivot_x,  // pivot point (in screen/buffer coords, 0/0 is upper left corner)
-					   coord_t pivot_y,  
-					   float rot,
-					   float zoom_x,
-					   float zoom_y,
-					   tile_map_t map_data,
-					   tile_data_t tile_set,
-					   gbuffer_t buf);
+void tile_blit_rot(coord_t kx,            // start in fb window x
+                   coord_t ky,            // start in fb window y
+                   coord_t w,             // window width
+                   coord_t h,             // window height
+                   coord_t px,            // translation within window
+                   coord_t py,  
+                   coord_t pivot_x,       // pivot point (in screen/buffer coords, 0/0 is upper left corner)
+                   coord_t pivot_y,  
+                   float rot,             // angle
+                   float zoom_x,          // zoom in horizontal direction
+                   float zoom_y,          // zoom in vertical direction
+                   tile_map_t map_data,   // map data
+                   tile_data_t tile_set,  // tile data
+                   int32_t alpha,         // transparency
+                   gbuffer_t buf);        // pointer to destination buffer
 
-void blit_tile_map_mode7(coord_t kx,  // start in fb window x
-					     coord_t ky,  // start in fb window y
-					     coord_t w,   // window width
-					     coord_t h,   // window height
-					     float px,  // translation within window
-					     float py,  // translation within window
-					     float pz,  // translation within window
-					     float pr,  // rotation within window
-					     tile_map_t map_data,
-					     tile_data_t tile_set,
-					     gbuffer_t fb);
+void tile_blit_mode7(coord_t kx,           // start in fb window x
+                     coord_t ky,           // start in fb window y
+                     coord_t w,            // window width
+                     coord_t h,            // window height
+                     float px,             // translation within window
+                     float py,             // translation within window
+                     float pz,             // translation within window
+                     float pr,             // rotation within window
+                     tile_map_t map_data,  // map data
+                     tile_data_t tile_set, // tile data
+                     int32_t alpha,        // transparency
+                     gbuffer_t buf);       // pointer to destination buffer
 					  
 #endif //TILEMAP_H

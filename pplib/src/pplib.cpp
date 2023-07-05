@@ -27,15 +27,17 @@ int pplInit() {
   
   bool blreq = checkBootsel();
 
-  if (lcd_init() != 0)
+  if ((lcd_init() != LCD_SUCCESS) && (!blreq))
     return -1;
 
-  if (blreq) blMenu();
+  if (blreq)
+    blMenu();
 
-  if (snd_init() != 0);
+  if (snd_init() != SND_SUCCESS)
     return -1;
 	
-  pwr_init();
+  if (pwr_init() != 0)
+    return -1;
   
   return 0;
 }

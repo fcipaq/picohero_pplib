@@ -65,7 +65,12 @@ typedef struct
 #endif
 
 /* ------------------------- tile maps ------------------------- */
-typedef gbuffer8_t tile_map_t;  // alias
+typedef struct 
+{
+    uint16_t width;
+	uint16_t height;
+	color8_t* data;
+} tile_map_t;
 
 typedef struct 
 {

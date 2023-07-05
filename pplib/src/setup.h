@@ -78,10 +78,10 @@
 //#define LCD_DOUBLE_PIXEL_LINEAR  // works with 16 bit mode only
 //#define LCD_DOUBLE_PIXEL_NEAREST
 
-/* ---------------------- TFT driver ----------------------*/
+/* ---------------------------- TFT driver ----------------------------- */
 #include "lcd_drv/ili9341_defines.h"
 
-/* ---------------------- sanity check ----------------------*/
+/* --------------------------- sanity check ---------------------------- */
 #if LCD_COLORDEPTH!=8 && LCD_COLORDEPTH!=16
 #error Please choose a valid color depth
 #endif

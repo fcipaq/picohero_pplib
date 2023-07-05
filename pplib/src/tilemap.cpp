@@ -24,32 +24,34 @@
 #pragma GCC optimize("Ofast")
 
 #include "gbuffers.h"
+#include "blitter.h"
 #include "hardware/interp.h"
 
 //#include <inttypes.h>
 #include <math.h>
 
-void blit_tile_map_rot(coord_t kx,  // start in fb window x
-					   coord_t ky,  // start in fb window y
-					   coord_t w,   // window width
-					   coord_t h,   // window height
-					   coord_t px,  // translation within window
-					   coord_t py,  
-					   coord_t pivot_x,  // pivot point (in screen/buffer coords, 0/0 is upper left corner)
-					   coord_t pivot_y,  
-					   float rot,
-					   float zoom_x,
-					   float zoom_y,
-					   tile_map_t map_data,
-					   tile_data_t tile_set,
-					   gbuffer_t buf) {
+void tile_blit_rot(coord_t kx,            // start in fb window x
+                   coord_t ky,            // start in fb window y
+                   coord_t w,             // window width
+                   coord_t h,             // window height
+                   coord_t px,            // translation within window
+                   coord_t py,  
+                   coord_t pivot_x,       // pivot point (in screen/buffer coords, 0/0 is upper left corner)
+                   coord_t pivot_y,  
+                   float rot,             // angle
+                   float zoom_x,          // zoom in horizontal direction
+                   float zoom_y,          // zoom in vertical direction
+                   tile_map_t map_data,   // map data
+                   tile_data_t tile_set,  // tile data
+                   int32_t alpha,         // transparency
+                   gbuffer_t buf) {       // pointer to destination buffer
 
   // This is the fractional part of a number when expressing a float as a fixed point integer. 
   #define BITS_FRACT 16
 
   // log2 may return e.g. 6.99 instead of 7.00 which needs to get rounded up
-  uint16_t map_width_log = round(log2(gbuf_get_width(map_data)));
-  uint16_t map_height_log = round(log2(gbuf_get_height(map_data)));
+  uint16_t map_width_log = round(log2(map_data.width));
+  uint16_t map_height_log = round(log2(map_data.height));
 
   uint16_t tiles_width = tile_set.width;
   uint16_t tiles_height = tile_set.height;
@@ -132,39 +134,57 @@ void blit_tile_map_rot(coord_t kx,  // start in fb window x
 
   uint32_t tiles_ofs = tiles_width * tiles_height;
 
-  for (int y = start_y ; y < end_y; ++y) {
-    interp0->accum[0] = rotate[1] * y + accum0_start;
-    interp0->accum[1] = rotate[3] * y + accum1_start;
-    interp1->accum[0] = (rotate[1] * y + accum0_start) * tiles_width;
-    interp1->accum[1] = (rotate[3] * y + accum1_start) * tiles_height;
+  if (alpha == BLIT_NO_ALPHA) {
+    for (int y = start_y ; y < end_y; ++y) {
+      interp0->accum[0] = rotate[1] * y + accum0_start;
+      interp0->accum[1] = rotate[3] * y + accum1_start;
+      interp1->accum[0] = (rotate[1] * y + accum0_start) * tiles_width;
+       interp1->accum[1] = (rotate[3] * y + accum1_start) * tiles_height;
 
-	  for (int x = start_x; x < end_x; ++x) {
+        for (int x = start_x; x < end_x; ++x) {
+            uint8_t t = *(uint8_t *) interp0->pop[2];
+            uint16_t c = (uint16_t) interp1->pop[2];
+            buf.data[x + y * buf_width] = tile_set.image->data[t * tiles_ofs + c];
+	    }
+    }
+  } else {
+    for (int y = start_y ; y < end_y; ++y) {
+      interp0->accum[0] = rotate[1] * y + accum0_start;
+      interp0->accum[1] = rotate[3] * y + accum1_start;
+      interp1->accum[0] = (rotate[1] * y + accum0_start) * tiles_width;
+      interp1->accum[1] = (rotate[3] * y + accum1_start) * tiles_height;
+
+      for (int x = start_x; x < end_x; ++x) {
           uint8_t t = *(uint8_t *) interp0->pop[2];
           uint16_t c = (uint16_t) interp1->pop[2];
-          buf.data[x + y * buf_width] = tile_set.image->data[t * tiles_ofs + c];
+          color_t col = tile_set.image->data[t * tiles_ofs + c];
+		  if (col != alpha)
+			buf.data[x + y * buf_width] = col;
 	  }
+    }
   }
 
-}  // pplBlitRotTileMap
+}  // tile_blit_rot
 
 
-void blit_tile_map_mode7(coord_t kx,  // start in fb window x
-					     coord_t ky,  // start in fb window y
-					     coord_t w,   // window width
-					     coord_t h,   // window height
-					     float px,  // translation within window
-					     float py,  // translation within window
-					     float pz,  // translation within window
-					     float pr,  // rotation within window
-					     tile_map_t map_data,
-					     tile_data_t tile_set,
-					     gbuffer_t fb) {
+void tile_blit_mode7(coord_t kx,           // start in fb window x
+                     coord_t ky,           // start in fb window y
+                     coord_t w,            // window width
+                     coord_t h,            // window height
+                     float px,             // translation within window
+                     float py,             // translation within window
+                     float pz,             // translation within window
+                     float pr,             // rotation within window
+                     tile_map_t map_data,  // map data
+                     tile_data_t tile_set, // tile data
+                     int32_t alpha,         // transparency
+                     gbuffer_t buf) {      // pointer to destination buffer
 
   // This is the fractional part of a number when expressing a float as a fixed point integer. 
   #define BITS_FRACT 16
   
-  uint16_t map_width = gbuf_get_width(map_data);
-  uint16_t map_height = gbuf_get_height(map_data);
+  uint16_t map_width = map_data.width;
+  uint16_t map_height = map_data.height;
 
   // log2 may return e.g. 6.99 instead of 7.00 which needs to get rounded up
   uint16_t map_width_log = round(log2(map_width));
@@ -212,8 +232,8 @@ void blit_tile_map_mode7(coord_t kx,  // start in fb window x
   int start_y, end_y, start_x, end_x;
   int shift_x = 0;
   
-  if (ky + h > gbuf_get_height(fb))
-    end_y = gbuf_get_height(fb);
+  if (ky + h > gbuf_get_height(buf))
+    end_y = gbuf_get_height(buf);
   else
     end_y = ky + h;
     
@@ -222,8 +242,8 @@ void blit_tile_map_mode7(coord_t kx,  // start in fb window x
   else
     start_y = ky;
 
-  if (kx + w > gbuf_get_width(fb))
-    end_x = gbuf_get_width(fb);
+  if (kx + w > gbuf_get_width(buf))
+    end_x = gbuf_get_width(buf);
   else
     end_x = kx + w;
 
@@ -244,7 +264,7 @@ void blit_tile_map_mode7(coord_t kx,  // start in fb window x
   uint32_t py32 = py * (1 << (BITS_FRACT - tiles_height_log)); // same as / tiles_height
   uint32_t pz32 = pz * (1 << BITS_FRACT);
  
-  uint16_t fb_width = gbuf_get_width(fb);
+  uint16_t fb_width = gbuf_get_width(buf);
  
   for (int y = start_y ; y < end_y ; ++y) {
     int32_t n = pz32 / (y - ky + 1);
@@ -273,12 +293,22 @@ void blit_tile_map_mode7(coord_t kx,  // start in fb window x
     interp1->base[0] = du * tiles_width;
     interp1->accum[1] = (v + shift_x * dv) * tiles_height;
     interp1->base[1] = dv * tiles_height;
-	  
+
+    if (alpha == BLIT_NO_ALPHA) {  
 	  for (int x = start_x; x < end_x; ++x) {
           uint8_t t = *(uint8_t *) interp0->pop[2];
           uint16_t c = (uint16_t) interp1->pop[2];
-          fb.data[x + y * fb_width] = tile_set.image->data[t * tiles_ofs + c];
+          buf.data[x + y * fb_width] = tile_set.image->data[t * tiles_ofs + c];
 	  }
+	} else {
+	  for (int x = start_x; x < end_x; ++x) {
+          uint8_t t = *(uint8_t *) interp0->pop[2];
+          uint16_t c = (uint16_t) interp1->pop[2];
+          color_t col = tile_set.image->data[t * tiles_ofs + c];
+		  if (col != alpha)
+            buf.data[x + y * fb_width] = col;
+	  }
+	}
   }
 
-}  // pplBlitTileMapM7
+}  // tile_blit_mode7
