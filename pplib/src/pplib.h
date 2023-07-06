@@ -39,7 +39,13 @@
 #include <blitter.h>
 #include <tilemap.h>
 
+/* ======================== definitions ========================= */
+
+// error messages
+#define PPL_SUCCESS           0
+#define PPL_UNKNOWN_ERROR    -1
+
 /* ====================== function declarations ====================== */
-int pplInit();
+int ppl_init();
 
 #endif // BLITTER

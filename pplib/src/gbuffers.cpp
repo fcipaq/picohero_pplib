@@ -22,7 +22,6 @@
 
 #include <Arduino.h>
 #include "gbuffers.h"
-#include "setup.h"
 #include "hardware/interp.h"
 
 uint16_t gbuf_get_width(gbuffer8_t buf) {

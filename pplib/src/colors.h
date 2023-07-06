@@ -25,12 +25,12 @@
 #include "typedefs.h"
 
 /* ==================== function declarations =================== */
-color16_t RGBColor888_565(uint8_t r, uint8_t g, uint8_t b);
-color8_t RGBColor888_332(uint8_t r, uint8_t g, uint8_t b);
-color16_t RGBColor565_565(uint8_t r, uint8_t g, uint8_t b);
-color8_t RGBColor332_332(uint8_t r, uint8_t g, uint8_t b);
-uint8_t RGB565_red5(color16_t col);
-uint8_t RGB565_green6(color16_t col);
-uint8_t RGB565_blue5(color16_t col);
+color16_t rgb_col_888_565(uint8_t r, uint8_t g, uint8_t b);
+color8_t  rgb_col_888_332(uint8_t r, uint8_t g, uint8_t b);
+color16_t rgb_col_565_565(uint8_t r, uint8_t g, uint8_t b);
+color8_t  rgb_col_332_332(uint8_t r, uint8_t g, uint8_t b);
+uint8_t   rgb_col_565_red(color16_t col);
+uint8_t   rgb_col_565_green(color16_t col);
+uint8_t   rgb_col_565_blue(color16_t col);
 
 #endif // COLORS_H

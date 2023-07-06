@@ -96,10 +96,10 @@ typedef struct
   typedef tile_data8_t tile_data_t;
 #endif
 
-/* ------------------------- coords ------------------------- */
+/* ---------------------- coordinates ---------------------- */
 typedef int coord_t;
 
-/* ------------------------- defines ------------------------- */
+/* ------------------------- fonts ------------------------- */
 typedef uint8_t font_t;
 
 #endif // TYPEDEFS_H

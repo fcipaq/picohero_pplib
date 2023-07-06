@@ -22,23 +22,23 @@
 
 #include "pplib.h"
 
-int pplInit() {
+int ppl_init() {
   ctrl_init();
   
-  bool blreq = checkBootsel();
+  bool bl_req = bl_check_selection();
 
-  if ((lcd_init() != LCD_SUCCESS) && (!blreq))
-    return -1;
+  if ((lcd_init() != LCD_SUCCESS) && (!bl_req))
+    return PPL_UNKNOWN_ERROR;
 
-  if (blreq)
-    blMenu();
+  if (bl_req)
+    bl_menu();
 
   if (snd_init() != SND_SUCCESS)
-    return -1;
+    return PPL_UNKNOWN_ERROR;
 	
   if (pwr_init() != 0)
-    return -1;
+    return PPL_UNKNOWN_ERROR;
   
-  return 0;
+  return PPL_SUCCESS;
 }
 

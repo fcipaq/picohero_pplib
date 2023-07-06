@@ -22,10 +22,7 @@
 
 /* ========================== includes ========================== */
 #include <Arduino.h>
-#include "gbuffers.h"
-#include "setup.h"
-#include "fonts.h"
-#include "primitives.h"
+#include "typedefs.h"
 
 #define MAX_LINES 30
 #define MAX_COLUMNS 50

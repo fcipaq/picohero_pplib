@@ -27,8 +27,8 @@
 #define BL_ANI_SPEED 50
 
 /* ====================== function declarations ====================== */
-void blMenu();
-void blLaunch();
-bool checkBootsel();
+void bl_menu();
+void bl_launch_bl();
+bool bl_check_selection();
 
 #endif // BL_MENU_H

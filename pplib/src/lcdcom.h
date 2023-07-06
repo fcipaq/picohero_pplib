@@ -23,6 +23,7 @@
 
 /* ========================== includes ========================== */
 #include "typedefs.h"
+#include "hwcfg.h"
 
 /* ======================== definitions ========================= */
 
@@ -54,6 +55,7 @@
 
 #define lcd_get_screen_width() (SCREEN_WIDTH)
 #define lcd_get_screen_height() (SCREEN_HEIGHT)
+#define lcd_get_screen_bpp() (LCD_COLORDEPTH)
 
 /* ====================== function declarations ====================== */
 int  lcd_init();

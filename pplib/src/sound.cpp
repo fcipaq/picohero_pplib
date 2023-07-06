@@ -22,7 +22,7 @@
 
 /* ========================== includes ========================== */
 #include "sound.h"
-#include "setup.h"
+#include "hwcfg.h"
 #include "typedefs.h"
 
 #include <stdint.h>
@@ -43,7 +43,7 @@ uint8_t snd_init_complete = 0;
 uint8_t snd_level = 1;
 
 /* ----------------------------- PIO -----------------------------*/
-PIO snd_pio = pio0;     // Code will try both pio's to find a free SM
+PIO snd_pio = pio0;
 int8_t snd_pio_sm = 0;  // pioinit will claim a free one
 
 // Updated later with the loading offset of the PIO program.
@@ -161,7 +161,7 @@ int snd_cancel_channel(uint8_t num_snd_channel) {
   return SND_SUCCESS;
 }
 
-void prepareSndBuf() {
+void snd_prepare_buf() {
 
   uint32_t min_len;
   bool buffers_waiting;
@@ -238,7 +238,7 @@ void prepareSndBuf() {
     snd_playing = false;
 }
 
-void txNullSound() {
+void snd_tx_null() {
   if (dma_channel_is_busy(snd_dma_chan) || snd_quiesce_machine)
     return;
 
@@ -255,7 +255,7 @@ void txNullSound() {
   irq_by_null_snd = 1;
 }
 
-void txSound() {
+void snd_tx() {
   snd_quiesce_machine = 0;
 
   if (dma_channel_is_busy(snd_dma_chan))
@@ -265,7 +265,7 @@ void txSound() {
 
   dma_channel_configure(snd_dma_chan, &snd_dma_config, &snd_pio->txf[snd_pio_sm], snd_buf[num_cur_snd_buf], snd_buf_pos[num_cur_snd_buf], true);  // snd_buf_pos is also the length
 
-  prepareSndBuf();
+  snd_prepare_buf();
 }
 
 void __isr snd_dma_handler() {
@@ -278,7 +278,7 @@ void __isr snd_dma_handler() {
   if (snd_playing) {
     // deque buffer if it's txSound why we're here
     // only call txSound if there are more buffer available
-    txSound();
+    snd_tx();
     return;
   } else {
     //      for (int h = 0; h < 2; h++)
@@ -288,7 +288,7 @@ void __isr snd_dma_handler() {
     //	    }
   }
 
-  txNullSound();  // prevent click and pop noise
+  snd_tx_null();  // prevent click and pop noise
 }
 
 bool snd_dma_init() {
@@ -314,7 +314,7 @@ bool snd_dma_init() {
   return true;
 }
 
-void sndDmaShutdown(void) {
+void snd_dma_shutdown(void) {
   if (!snd_dma_enabled)
     return;
 
@@ -451,8 +451,8 @@ int snd_enque_buf(uint8_t* ext_buf, uint32_t buffersize, uint8_t num_snd_channel
 	  }
 */
       irq_set_enabled(DMA_IRQ_1, true);
-      prepareSndBuf();
-      txSound();
+      snd_prepare_buf();
+      snd_tx();
     }
   }
 

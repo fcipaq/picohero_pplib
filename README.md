@@ -81,6 +81,12 @@ RAM
 Place the *pplib* directory into your Arduino libraries folder. Next, install Earle Philhower's Raspberry Pi Pico Arduino core. The library is meant to be used with Arduino. It is written in non-object-oriented C++. At first you need to setup the hardware (16 bit or 8 bit color depth, resolution, panel fitter). See setup.h for details. Your sketch has then to call pplInit() right at the beginning. 
 That’s it. You may now build the examples.
 
+# Setup
+
+Some compile time hardware setup can be done in setup.h
+
+// TODO  
+
 # Library description:
 
 ## Types
@@ -94,34 +100,8 @@ That’s it. You may now build the examples.
 
 `int pplInit()`
 
-This function is called to initialize all the hardware on the *Pico Hero*. It’s supposed to be called right at the beginning of `setup()`. This also does the bootloader handling (press all three buttons when powering up the *Pico Hero* to enter bootloader mode) – so it’s very important. 
-
-
-### gbuffers
-
-All graphics are rendered into objects called graphics buffers (or gbuffers). Those contain the information about the image size and color depth as well as a pointer to the actual image data.
-The functions are overloaded to work with 8 bit as well as 16 bit color depths.
-The library does not support rendering graphics (e.g. a line or a circle) directly to the screen.
-
-`uint16_t  gbuf_get_width(gbuffer8_t buf)`
-
-Returns the width of a buffer
-
-`uint16_t  gbuf_get_height(gbuffer8_t buf)`
-
-Returns the height of a buffer
-
-`int gbuf_alloc(gbuffer8_t* buf, uint16_t width, uint16_t height, uint8_t colors) `
-
-Allocates memory to an already existing graphics buffer object. Returns *BUF_ERR_NO_RAM* on failure otherwise *BUF_SUCCESS*
-
-`uint8_t*  gbuf_get_dat_ptr(gbuffer8_t buf)`
-
-Returns the data pointer of a buffer object.
-
-`void gbuf_free(gbuffer8_t buf) `
-
-Frees the data memory of a buffer object.
+This function is called to initialize all the hardware on the *Pico Hero*. It’s supposed to be called right at the beginning of `setup()`. This also does the bootloader handling (press all three buttons when powering up the *Pico Hero* to enter bootloader mode) – so it’s very important.
+On success zero is returned otherwise an error code. If the LCD initialization fails, the bootloader is called.
 
 
 ### lcdcom
@@ -160,32 +140,31 @@ Disables the tearing signal.
 Returns the current state of the tearing signal. 
 
 
-### sound
+### gbuffers
 
-`int  snd_enque_buf(uint8_t *ext_buf, uint32_t buffersize, uint8_t num_snd_channel, bool blocking) `
+All graphics are rendered into objects called graphics buffers (gbuffer_t). Those contain the information about the image size and color depth as well as a pointer to the actual image data.
+The functions are overloaded to work with 8 bit as well as 16 bit color depths.
+The library does not support rendering graphics (e.g. a line or a circle) directly to the screen.
 
-Enques a buffer to be played. *ext_buf* is a pointer to an unsigned 8 bit array of a PCM buffer. You may state one of four channels (SND_CHAN_0 to SND_CHAN_3). If _blocking_ is set to SND_BLOCKING then the funciont will only return once the buffer is enqueued (if there is no free buffer, the function waits). If set to SND_NONBLOCKING, the function will immediately return even if the buffer was unable to be enqueued. If the buffer was successfully enqueued *SND_SUCCESS* is returned.
-The buffer will be played with support of DMA and interrupts. So this is mostly fire-and-forget. Once the buffer is enqueued, it will be played without any further action needed.
+`uint16_t  gbuf_get_width(gbuffer8_t buf)`
 
-`int  snd_num_bufs_free(uint8_t num_snd_channel)`
+Returns the width of a buffer
 
-Returns the number of free buffers.
+`uint16_t  gbuf_get_height(gbuffer8_t buf)`
 
-`int  snd_num_bufs_waiting(uint8_t num_snd_channel) `
+Returns the height of a buffer
 
-Returns the number of buffers waiting (0 means idle)
+`int gbuf_alloc(gbuffer8_t* buf, uint16_t width, uint16_t height, uint8_t colors) `
 
-`int  snd_cancel_channel(uint8_t num_snd_channel)`
+Allocates memory to an already existing graphics buffer object. Returns *BUF_ERR_NO_RAM* on failure otherwise *BUF_SUCCESS*
 
-Cancels playback on given channel (*SND_CHAN_ALL* cancels all playback)
+`uint8_t*  gbuf_get_dat_ptr(gbuffer8_t buf)`
 
-`int  snd_set_freq(uint32_t freq)`
+Returns the data pointer of a buffer object.
 
-Sets the playback frequency.
+`void gbuf_free(gbuffer8_t buf) `
 
-`void snd_set_vol(uint8_t vol)`
-
-Sets the volume level (from 0 to 5)
+Frees the data memory of a buffer object.
 
 
 ### blitter
@@ -232,11 +211,50 @@ void blit_buf(coord_t kx,     // x-coord where to blit the of CENTER of the imag
 Blits a buffer to another buffer at the position *kx*, *ky*, zooms it in horizontal direction with the factor of *zoom_x* in vertical direction with the factor of *zoom_y*.  *flip_x* and *flip_y* state if the buffer shall be flipped (0 = no flipping, 1 = flipping). Alpha states the transparent color (BLIT_NO_ALPHA for no transparency)
 
 
-### tile map
+### colors
+
+Colors may be converted, composed or channels may be extracted using the following functions:
+
+`color16_t rgb_col_888_565(uint8_t r, uint8_t g, uint8_t b)`
+
+Returns the color in 16 bit machine readable format when given r g and b values in 24 bits. (R-G-B 8-8-8)
+Ranges - r: 0..255, g: 0..255 and b: 0..255
+
+`color8_t rgb_col_888_332(uint8_t r, uint8_t g, uint8_t b)`
+
+Returns the color in 8 bit in machine readable format when given r g and b values in 24 bits. (R-G-B 8-8-8)
+Ranges - r: 0..255, g: 0..255 and b: 0..255
+   
+`color16_t rgb_col_565_565(uint8_t r, uint8_t g, uint8_t b)`
+
+Returns the color in 16 bit machine readable format when given r g and b values in 16 bits. R-G-B 5-6-5
+Ranges - r: 0..31, g: 0..63 and b: 0..31
+   
+`color8_t  rgb_col_332_332(uint8_t r, uint8_t g, uint8_t b)`
+
+Returns the color in 8 bit machine readable format when given r g and b values in 8 bits. (R-G-B 3-3-2)
+Ranges - r: 0..7, g: 0..7 and b: 0..3
+
+`uint8_t rgb_col_565_red(color16_t col)`
+
+Returns the red component of a RGB565 color as a value ranging from 0..31
+
+`uint8_t rgb_col_565_green(color16_t col)`
+
+Returns the green component of a RGB565 color as a value ranging from 0..63
+
+`uint8_t rgb_col_565_blue(color16_t col)`
+
+Returns the blue component of a RGB565 color as a value ranging from 0..31
+
+### fonts
+
+
+### tile maps
 
 Tiles maps are used to build environments out of tiles (in order to save storage). Tile maps consist of two components: a tile map that states which tile has to be placed where. And the tile data containing the actual image information. If a tile is repeated multiple times, then memory has been saved.
 
-Tile map objects (tile_map_t) contain an 8 bit array and that means there is a maximum number of 256 different tiles per map allowed. Every byte of the map array holds an number that represents a certain tile. A tile data object is very similar to a graphics buffer but also contains the number of tiles which allows to store the data of multiple tiles in a single tile_data_t object. The tiles themselves may be of 8 or 16 bit color depth. A constraints introduced by the way the lookup is done by the interpolator is that the width and the height of a tile must be a power of 2 as does the width and the height of the map. For example a map may be 128 by 64 tiles. And each of the tiles may be of the size 64 by 32 pixels.
+Tile map objects (tile_map_t) contain an 8 bit array and that means there is a maximum number of 256 different tiles per map allowed. Every byte of the map array holds an number that represents a certain tile. A tile data object (tile_data_t) is very similar to a graphics buffer but also contains the number of tiles stored which allows multiple tiles to be contained in a single object. The tiles themselves may be of 8 or 16 bit color depth. A constraint introduced by the way the interpolator handles the lookup is that the width and the height of a tile must be a power of 2 as does the width and the height of the map. For example a map may be 128 by 64 tiles. And each of the tiles may be of the size 64 by 32 pixels. All tiles of a tile data object are of the same size.
 
 
 ```
@@ -279,3 +297,30 @@ This blits a tile map in top down style. Since the RP2040 interpolator does most
 
 *kx* , *ky* , w and h state the size of the image in the (frame)buffer. *px* and *py*  state the translation of the map (what part of the map you get to see) and *pivot_x* and *pivot_y* state the coordinated of the pivot point in case you want to rotate the map by the angle *rot*. *zoom_x* and *zoom_y* state the zoom factor in horizontal resp. vertical direction.
 
+
+### sound
+
+`int  snd_enque_buf(uint8_t *ext_buf, uint32_t buffersize, uint8_t num_snd_channel, bool blocking) `
+
+Enques a buffer to be played. *ext_buf* is a pointer to an unsigned 8 bit array of a PCM buffer. You may state one of four channels (SND_CHAN_0 to SND_CHAN_3). If _blocking_ is set to SND_BLOCKING then the funciont will only return once the buffer is enqueued (if there is no free buffer, the function waits). If set to SND_NONBLOCKING, the function will immediately return even if the buffer was unable to be enqueued. If the buffer was successfully enqueued *SND_SUCCESS* is returned.
+The buffer will be played with support of DMA and interrupts. So this is mostly fire-and-forget. Once the buffer is enqueued, it will be played without any further action needed.
+
+`int  snd_num_bufs_free(uint8_t num_snd_channel)`
+
+Returns the number of free buffers.
+
+`int  snd_num_bufs_waiting(uint8_t num_snd_channel) `
+
+Returns the number of buffers waiting (0 means idle)
+
+`int  snd_cancel_channel(uint8_t num_snd_channel)`
+
+Cancels playback on given channel (*SND_CHAN_ALL* cancels all playback)
+
+`int  snd_set_freq(uint32_t freq)`
+
+Sets the playback frequency.
+
+`void snd_set_vol(uint8_t vol)`
+
+Sets the volume level (from 0 to 5)

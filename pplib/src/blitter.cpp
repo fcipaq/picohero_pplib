@@ -22,8 +22,6 @@
 
 #include "blitter.h"
 #include "gbuffers.h"
-#include "setup.h"
-
 #include "hardware/interp.h"
 
 #include <Arduino.h>
@@ -144,15 +142,15 @@ void blit_buf(coord_t kx,       // x-coord where to blit the of CENTER of the im
   uint16_t width_log = round(log2(width));
   uint16_t height_log = round(log2(height));
 
-// shift and mask need to take color depth into account.
-// Because if color depth is two bytes per pixel then
-// the image data will be twice as large
-// "1" in log2 means: * 2
-#if LCD_COLORDEPTH == 16
-#define INTERP_COL_DEPTH 1
-#elif LCD_COLORDEPTH == 8
-#define INTERP_COL_DEPTH 0
-#endif
+  // shift and mask need to take color depth into account.
+  // Because if color depth is two bytes per pixel then 
+  // the image data will be twice as large  
+  // "1" in log2 means: * 2
+  #if LCD_COLORDEPTH == 16
+  #define INTERP_COL_DEPTH 1
+  #elif LCD_COLORDEPTH == 8
+  #define INTERP_COL_DEPTH 0
+  #endif
 
   interp_config lane0_cfg = interp_default_config();
   // The shift is for the fixed point integer <-> float reresentation. 16 bits, so 65536 represent 1
@@ -266,15 +264,15 @@ void blit_buf(coord_t kx,       // x-coord where to blit the of CENTER of the im
   uint16_t width_log = round(log2(width));
   uint16_t height_log = round(log2(height));
 
-// shift and mask need to take color depth into account.
-// Because if color depth is two bytes per pixel then
-// the image data will be twice as large
-// "1" in log2 means: * 2
-#if LCD_COLORDEPTH == 16
-#define INTERP_COL_DEPTH 1
-#elif LCD_COLORDEPTH == 8
-#define INTERP_COL_DEPTH 0
-#endif
+  // shift and mask need to take color depth into account.
+  // Because if color depth is two bytes per pixel then
+  // the image data will be twice as large
+  // "1" in log2 means: * 2
+  #if LCD_COLORDEPTH == 16
+  #define INTERP_COL_DEPTH 1
+  #elif LCD_COLORDEPTH == 8
+  #define INTERP_COL_DEPTH 0
+  #endif
 
   // Can probably be done with only one lane. Revise.
   interp_config lane0_cfg = interp_default_config();

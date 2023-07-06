@@ -22,7 +22,6 @@
 
 #include "console.h"
 #include "gbuffers.h"
-#include "setup.h"
 #include "fonts.h"
 #include "primitives.h"
 

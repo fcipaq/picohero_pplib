@@ -21,7 +21,7 @@
 #pragma GCC optimize("Ofast")
 
 #include "buttons.h"
-#include "setup.h"
+#include "hwcfg.h"
 
 uint16_t x_0 = 400;
 uint16_t y_0 = 400;

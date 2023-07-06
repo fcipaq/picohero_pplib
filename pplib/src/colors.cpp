@@ -25,9 +25,9 @@
 /*
  * Returns the color in 8 bit machine readable format when given
  * r g and b values in 8 bits. R-G-B 3-3-2
- * Ranges from r: 0..7, g: 0..7 and b: 0..3
+ * So r ranges from 0..255, g: 0..255 and b: 0..255
  */
-color8_t RGBColor332_332(uint8_t r, uint8_t g, uint8_t b)
+color8_t rgb_col_332_332(uint8_t r, uint8_t g, uint8_t b)
 {
   return (r * 32 + g * 4 + b);
 }
@@ -37,7 +37,7 @@ color8_t RGBColor332_332(uint8_t r, uint8_t g, uint8_t b)
    r g and b values in 24 bits. R-G-B 8-8-8
    So r ranges from 0..8, g: 0..8 and b: 0..3
 */
-color8_t RGBColor888_332(uint8_t r, uint8_t g, uint8_t b)
+color8_t rgb_col_888_332(uint8_t r, uint8_t g, uint8_t b)
 {
     return ((r & 0xE0) | ((g & 0xE0) >> 3) | ((b & 0xC0) >> 6));
 }
@@ -45,21 +45,21 @@ color8_t RGBColor888_332(uint8_t r, uint8_t g, uint8_t b)
 /*
  * Returns the red component of a RGB565 color as a value ranging from 0..31
  */
-uint8_t RGB565_red5(color16_t col) {
+uint8_t rgb_col_565_red(color16_t col) {
   return (col >> 11) & 0x1f;
 }
 
 /*
  * Returns the green component of a RGB565 color as a value ranging from 0..63
  */
-uint8_t RGB565_green6(color16_t col) {
+uint8_t rgb_col_565_green(color16_t col) {
   return (col >> 5) & 0x3f;
 }
 
 /*
  * Returns the blue component of a RGB565 color as a value ranging from 0..31
  */
-uint8_t RGB565_blue5(color16_t col) {
+uint8_t rgb_col_565_blue(color16_t col) {
   return (col & 0x1f);
 }
 
@@ -68,7 +68,7 @@ uint8_t RGB565_blue5(color16_t col) {
    r g and b values in 16 bits. R-G-B 5-6-5
    So r ranges from 0..31, g: 0..63 and b: 0..31
 */
-color16_t RGBColor565_565(uint8_t r, uint8_t g, uint8_t b)
+color16_t rgb_col_565_565(uint8_t r, uint8_t g, uint8_t b)
 {
   return (r << 11 | g << 5 | b);
 }
@@ -78,7 +78,7 @@ color16_t RGBColor565_565(uint8_t r, uint8_t g, uint8_t b)
    r g and b values in 24 bits. R-G-B 8-8-8
    So r ranges from 0..255, g: 0..255 and b: 0..255
 */
-color16_t RGBColor888_565(uint8_t r, uint8_t g, uint8_t b)
+color16_t rgb_col_888_565(uint8_t r, uint8_t g, uint8_t b)
 {
   return ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
 }

@@ -21,7 +21,7 @@
 #pragma GCC optimize("Ofast")
 
 #include "power.h"
-#include "setup.h"
+#include "hwcfg.h"
 
 uint8_t lst_bat_lvl = 100;
 

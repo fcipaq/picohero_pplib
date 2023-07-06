@@ -25,7 +25,7 @@
 #include "gbuffers.h"
 #include "lcdcom.h"
 #include "buttons.h"
-#include "fonts.h"
+//#include "fonts.h"
 #include "colors.h"
 
 #include "bl_image.h"
@@ -36,7 +36,7 @@
 #include <Arduino.h>
 
 // Enters bootloader in case all buttons are pressed during system reset
-bool checkBootsel() {
+bool bl_check_selection() {
   uint16_t buttons = getButtons();
 
   if ( (buttons & BUTTON_1) && 
@@ -48,25 +48,24 @@ bool checkBootsel() {
 }
 
 // Launches the bootloader
-void blLaunch() {
+void bl_launch_bl() {
 	reset_usb_boot(0, 0);
 }
 
-void rebootmachine() {
+void bl_reboot_machine() {
   // let's just hope noone messed with the WD settings...
   watchdog_reboot(0, 0, 1);
   watchdog_enable(1, false);
 }
 
-void blMenu() {
+void bl_menu() {
   // Code is quite hacky to support both 8 and 16 bit mode,
   // it bypassed most of the higher level functions of the lcdcom lib
   //#define RGB888_565(r, g, b) ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3)
 
 // DEBUG
-blLaunch();
+//bl_launch_bl();
 
-  // If no TE signal can be detected, assume the whole LCD is not connected
   uint32_t timer_te = millis();
   
   while (!lcd_get_vblank()) {
@@ -75,16 +74,17 @@ blLaunch();
       break;
   } 
 
+  // If no TE signal can be detected, assume the whole LCD is not connected
   if (millis() - timer_te > 10)
-    blLaunch();
+    bl_launch_bl();
 
   // allocate line buffer
-  color_t* lb1 = (color_t*) malloc(SCREEN_WIDTH * LCD_COLORDEPTH / 2);
-  color_t* lb2 = (color_t*) malloc(SCREEN_WIDTH * LCD_COLORDEPTH / 2);
+  color_t* lb1 = (color_t*) malloc(lcd_get_screen_width() * lcd_get_screen_bpp() / 2);
+  color_t* lb2 = (color_t*) malloc(lcd_get_screen_width() * lcd_get_screen_bpp() / 2);
   // If no linebuffer can be allocated or no LCD connection can be confirmed,
   // skip the menu and launch bootloader right away
   if ((lb1 == NULL) || (lb2 == NULL))
-	blLaunch();
+	bl_launch_bl();
 
   color_t* lb_back = lb1;
 
@@ -93,8 +93,8 @@ blLaunch();
   int sstar[BL_NUMSTAR];
 
   for (int h = 0; h < BL_NUMSTAR; h++) {
-    xstar[h] = random(SCREEN_WIDTH);
-    ystar[h] = random(SCREEN_HEIGHT);
+    xstar[h] = random(lcd_get_screen_width());
+    ystar[h] = random(lcd_get_screen_height());
     sstar[h] = random(3) + 1;
   }
 
@@ -115,22 +115,22 @@ blLaunch();
   // color of menu items
   color_t text1, text2, text3;
   
-  #if LCD_COLORDEPTH==16
-  color_t backgnd = RGBColor888_565(0x00, 0x00, 0x00);
-  color_t textbkg = RGBColor888_565(200, 60, 255);
-  color_t textcol = RGBColor888_565(0xff, 0xff, 0xff);
-  color_t texthi = RGBColor888_565(0xff, 0x00, 0x00);
-  color_t starcol1 = RGBColor888_565(0xff, 0xff, 0xff);
-  color_t starcol2 = RGBColor888_565(150, 150, 150);
-  color_t starcol3 = RGBColor888_565(80, 80, 80);
-  #elif LCD_COLORDEPTH==8
-  color_t backgnd = RGBColor888_332(0x00, 0x00, 0x00);
-  color_t textbkg = RGBColor888_332(200, 60, 255);
-  color_t textcol = RGBColor888_332(0xff, 0xff, 0xff);
-  color_t texthi = RGBColor888_332(0xff, 0x00, 0x00);
-  color_t starcol1 = RGBColor888_332(0xff, 0xff, 0xff);
-  color_t starcol2 = RGBColor888_332(150, 150, 150);
-  color_t starcol3 = RGBColor888_332(80, 80, 80);
+  #if lcd_get_screen_bpp()==16
+  color_t backgnd = rgb_col_888_565(0x00, 0x00, 0x00);
+  color_t textbkg = rgb_col_888_565(200, 60, 255);
+  color_t textcol = rgb_col_888_565(0xff, 0xff, 0xff);
+  color_t texthi = rgb_col_888_565(0xff, 0x00, 0x00);
+  color_t starcol1 = rgb_col_888_565(0xff, 0xff, 0xff);
+  color_t starcol2 = rgb_col_888_565(150, 150, 150);
+  color_t starcol3 = rgb_col_888_565(80, 80, 80);
+  #elif lcd_get_screen_bpp()==8
+  color_t backgnd = rgb_col_888_332(0x00, 0x00, 0x00);
+  color_t textbkg = rgb_col_888_332(200, 60, 255);
+  color_t textcol = rgb_col_888_332(0xff, 0xff, 0xff);
+  color_t texthi = rgb_col_888_332(0xff, 0x00, 0x00);
+  color_t starcol1 = rgb_col_888_332(0xff, 0xff, 0xff);
+  color_t starcol2 = rgb_col_888_332(150, 150, 150);
+  color_t starcol3 = rgb_col_888_332(80, 80, 80);
   #endif
   
   // menu position
@@ -140,10 +140,10 @@ blLaunch();
     uint8_t color_corr = 1;
   #endif
 
-  // bl_menu[0] is the width
-  // bl_menu[1] is the height
-  int ofs_x = SCREEN_WIDTH / 2 - bl_menu[0] / 2 / color_corr;
-  int ofs_y = 30 / color_corr;//SCREEN_HEIGHT / 2 - gbuf_get_width((gbuffer_t*) bl_menu) / 2;
+  // bl_menu_image[0] is the width
+  // bl_menu_image[1] is the height
+  int ofs_x = lcd_get_screen_width() / 2 - bl_menu_image[0] / 2 / color_corr;
+  int ofs_y = 30 / color_corr;//lcd_get_screen_height() / 2 - gbuf_get_width((gbuffer_t*) bl_menu_image) / 2;
 
   while (!getButtons() || !button_debounce) {
     if (!button_debounce) {
@@ -178,12 +178,12 @@ blLaunch();
     for (int h = 0; h < BL_NUMSTAR; h++) {
       xstar[h] -= sstar[h];
       if (xstar[h] < 0)
-        xstar[h] = SCREEN_WIDTH;
+        xstar[h] = lcd_get_screen_width();
     }
 
-    for (int y = 0; y < SCREEN_HEIGHT; y++) {
+    for (int y = 0; y < lcd_get_screen_height(); y++) {
       // clear line buffer
-      for (int h = 0; h < SCREEN_WIDTH; h++)
+      for (int h = 0; h < lcd_get_screen_width(); h++)
         lb_back[h] = 0x00;
 
       // draw stars  
@@ -198,12 +198,12 @@ blLaunch();
         }
 
       // draw menu
-      for (int x = 0; x < SCREEN_WIDTH; x++) {
+      for (int x = 0; x < lcd_get_screen_width(); x++) {
         if ( (x >= ofs_x) &&
-             (x < ofs_x + bl_menu[0] / color_corr) &&
+             (x < ofs_x + bl_menu_image[0] / color_corr) &&
              (y >= ofs_y ) &&
-             (y < ofs_y + bl_menu[1] / color_corr ) ) {
-          uint8_t c = bl_menu[ (y - ofs_y) * bl_menu[0] * color_corr + (x - ofs_x) * color_corr];
+             (y < ofs_y + bl_menu_image[1] / color_corr ) ) {
+          uint8_t c = bl_menu_image[ (y - ofs_y) * bl_menu_image[0] * color_corr + (x - ofs_x) * color_corr];
 
           switch(c) {
             case 0:
@@ -236,9 +236,9 @@ blLaunch();
       #if defined LCD_DOUBLE_PIXEL_NEAREST || defined LCD_DOUBLE_PIXEL_LINEAR
 	    // double scanout each line
         for (int i = 0; i < 2; i++)
-          lcd_send_framebuffer(lb_back, SCREEN_WIDTH);
+          lcd_send_framebuffer(lb_back, lcd_get_screen_width());
 	  #else
-        lcd_send_framebuffer(lb_back, SCREEN_WIDTH);
+        lcd_send_framebuffer(lb_back, lcd_get_screen_width());
 	  #endif
   
       if (lb_back == lb1)
@@ -290,10 +290,10 @@ blLaunch();
 
   switch (sel) {
     case 1:
-	   blLaunch();
+	 bl_launch_bl();
      break;
     case 2:
-     rebootmachine();
+     bl_reboot_machine();
      break;
     default:
     break;
