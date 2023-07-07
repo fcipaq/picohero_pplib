@@ -54,8 +54,8 @@ The whole library is built around Earle Philhower's Raspberry Pi Pico Arduino co
 ## Core features:
 
 - screen: 16 bit and 8 bit (must choose at compile time) buffers, full and half resolution panel fitter (nearest neighbor and experimental linear filter)
-- fast blitter (using the RP2040 interpolator) with zooming/rotation
-- fast tilemap routines to build platformer, racing games, RPGs etc. (also using the RP2040 interpolator)
+- fast blitter (using the RP2040's "interpolator") with zooming/rotation
+- fast tilemap routines to build platformer, racing games, RPGs etc. (also using the RP2040's "interpolator")
 - sound library for sound output (8 bit PCM up to 22000 Hz) with four channels for mixing
 - font library with the ability to import true type fonts (FontEditor written by H. Reddmann)
 
@@ -85,7 +85,22 @@ That’s it. You may now build the examples.
 
 Some compile time hardware setup can be done in setup.h
 
-// TODO  
+`LCD_PIO_SPEED`
+ 
+ This compiler switch defines the interface speed to the ILI9341 controller in MHz. The speed calculation is with respect to CPU speed
+ 
+`LCD_ROTATION`
+
+States the screen orientation. Possible values are:
+
+0 = 0° (portrait)
+1 = 90° (landscape)
+2 = 180° (portrait upside down)
+3 = 270° (landscape upside down)
+
+`LCD_COLORDEPTH`
+`LCD_DOUBLE_PIXEL_LINEAR`  // works with 16 bit mode only
+`LCD_DOUBLE_PIXEL_NEAREST`
 
 # Library description:
 
@@ -109,7 +124,7 @@ On success zero is returned otherwise an error code. If the LCD initialization f
 This is the hardware layer to interface with the LCD
 
 `void lcd_set_speed(uint32_t freq)`
-This sets the LCD interface speed to the ILI9341. Specs state a max frequency of approx. 30 MHz however 100 MHz should work fine. You should not call this in the middle of program execution (it’s called from *pplInit*). When the CPU is being overclocked, the function is aware of that and the PIO speed adjusted accordingly.
+This sets the LCD interface speed to the ILI9341. Specs state a max frequency of approx. 30 MHz however 100 MHz should work fine. You should not call this in the middle of program execution (it’s called from `ppl_init()`). When the CPU is being overclocked, the function is aware of that and the PIO speed adjusted accordingly.
 
 `int  lcd_show_framebuffer(gbuffer_t buf)`
 
@@ -121,7 +136,7 @@ Waits until a pending buffer has been sent to the LCD.
 
 `int  lcd_check_ready()`
 
-Returns *true* if the transmission subsystem is idle (i.e. is ready to send another buffer).
+Returns `true´ if the transmission subsystem is idle (i.e. is ready to send another buffer).
 
 `void lcd_set_backlight(byte level)`
 
@@ -156,7 +171,7 @@ Returns the height of a buffer
 
 `int gbuf_alloc(gbuffer8_t* buf, uint16_t width, uint16_t height, uint8_t colors) `
 
-Allocates memory to an already existing graphics buffer object. Returns *BUF_ERR_NO_RAM* on failure otherwise *BUF_SUCCESS*
+Allocates memory to an already existing graphics buffer object. Returns `BUF_ERR_NO_RAM` on failure otherwise `BUF_SUCCESS`
 
 `uint8_t*  gbuf_get_dat_ptr(gbuffer8_t buf)`
 
@@ -179,7 +194,7 @@ void blit_buf(coord_t kx,    // coordinates of upper left corner
               int32_t alpha)
 ```
 
-Blits a buffer to another buffer at the position *kx*, *ky*. Alpha states the transparent color (BLIT_NO_ALPHA for no transparency)
+Blits a buffer to another buffer at the position `kx`, `ky`. Alpha states the transparent color (BLIT_NO_ALPHA for no transparency)
 
 
 ```
@@ -192,8 +207,25 @@ void blit_buf(coord_t kx,    // x-coord where to blit the of CENTER of the image
               gbuffer_t dst) // pointer to destination buffer
 ```
 
-Blits a buffer to another buffer at the position *kx*, *ky*, zooms it at the factor of *zoom* and rotates is at the angle of *rot*. Alpha states the transparent color (BLIT_NO_ALPHA for no transparency)
+Blits a buffer to another buffer at the position `kx`, `ky`, zooms it at the factor of `zoom` and rotates is at the angle of `rot`. Alpha states the transparent color (BLIT_NO_ALPHA for no transparency).
+Note: Due to the nature of how the rotation is done with the "interpolator", when rotating the original image must be smaller in size than the buffer containing it. In fact it needs to be smaller by a factor of sqrt(2) x sqrt(1.75). This is because otherwise there will be artifacts from the "interpolator" folding back parts of the image into the visible area.
+For example if the buffer is 16 by 8 pixels, the visible area must be centered and not exceed 8 by 4 pixels:
 
+(X: allowed image area, O: blank area - background or "transparent color")
+
+```
+OOOOOOOOOOOOOOOO
+OOOOOOOOOOOOOOOO
+OOOOXXXXXXXXOOOO
+OOOOXXXXXXXXOOOO
+OOOOXXXXXXXXOOOO
+OOOOXXXXXXXXOOOO
+OOOOOOOOOOOOOOOO
+OOOOOOOOOOOOOOOO
+```
+
+This is somewhat a tradeoff between memory usage and  performance. Images are therefore best stored in flash.
+Both width and height of the image size must be power of 2.
 
 
 ```
@@ -208,8 +240,8 @@ void blit_buf(coord_t kx,     // x-coord where to blit the of CENTER of the imag
               gbuffer_t dst)  // pointer to destination buffer
 ```
 
-Blits a buffer to another buffer at the position *kx*, *ky*, zooms it in horizontal direction with the factor of *zoom_x* in vertical direction with the factor of *zoom_y*.  *flip_x* and *flip_y* state if the buffer shall be flipped (0 = no flipping, 1 = flipping). Alpha states the transparent color (BLIT_NO_ALPHA for no transparency)
-
+Blits a buffer to another buffer at the position `kx`, `ky`, zooms it in horizontal direction with the factor of `zoom_x` in vertical direction with the factor of `zoom_y`.  `flip_x` and `flip_y` state if the buffer shall be flipped (0 = no flipping, 1 = flipping). Alpha states the transparent color (BLIT_NO_ALPHA for no transparency)
+Since this operation is accelerated by the use of the "interpolator", both width and height of the image size must be power of 2.
 
 ### colors
 
@@ -254,68 +286,72 @@ Returns the blue component of a RGB565 color as a value ranging from 0..31
 
 Tiles maps are used to build environments out of tiles (in order to save storage). Tile maps consist of two components: a tile map that states which tile has to be placed where. And the tile data containing the actual image information. If a tile is repeated multiple times, then memory has been saved.
 
-Tile map objects (tile_map_t) contain an 8 bit array and that means there is a maximum number of 256 different tiles per map allowed. Every byte of the map array holds an number that represents a certain tile. A tile data object (tile_data_t) is very similar to a graphics buffer but also contains the number of tiles stored which allows multiple tiles to be contained in a single object. The tiles themselves may be of 8 or 16 bit color depth. A constraint introduced by the way the interpolator handles the lookup is that the width and the height of a tile must be a power of 2 as does the width and the height of the map. For example a map may be 128 by 64 tiles. And each of the tiles may be of the size 64 by 32 pixels. All tiles of a tile data object are of the same size.
+Tile map objects (tile_map_t) contain an 8 bit array and that means there is a maximum number of 256 different tiles per map allowed. Every byte of the map array holds an number that represents a certain tile. A tile data object (tile_data_t) is very similar to a graphics buffer but also contains the number of tiles stored which allows multiple tiles to be contained in a single object. The tiles themselves may be of 8 or 16 bit color depth. A constraint introduced by the way the "interpolator" handles the lookup is that the width and the height of a tile must be a power of 2 as does the width and the height of the map. For example a map may be 128 by 64 tiles. And each of the tiles may be of the size 64 by 32 pixels. All tiles of a tile data object are of the same size.
 
 
 ```
-void blit_tile_map_mode7(coord_t kx,           // start in fb window x
-                         coord_t ky,           // start in fb window y
-                         coord_t w,            // window width
-                         coord_t h,            // window height
-                         float px,             // translation within window
-                         float py,             // translation within window
-                         float pz,             // translation within window
-                         float pr,             // rotation within window
-                         tile_map_t map_data,  // map data
-                         tile_data_t tile_set, // tile data
-                         gbuffer_t buf)        // pointer to destination buffer
+void tile_blit_mode7(coord_t kx,           // start in fb window x
+                     coord_t ky,           // start in fb window y
+                     coord_t w,            // window width
+                     coord_t h,            // window height
+                     float px,             // translation within window
+                     float py,             // translation within window
+                     float pz,             // translation within window
+                     float pr,             // rotation within window
+                     tile_map_t map_data,  // map data
+                     tile_data_t tile_set, // tile data
+                     int32_t alpha,        // transparency
+                     gbuffer_t buf);       // pointer to destination buffer
 ```
 
-This blits a tile map in SNES-mode-7-style. A pseudo 3D affine transformation. Since the RP2040 interpolator does most of the work this works with a frame rate sufficient for full screen display.
+This blits a tile map in SNES-mode-7-style. A pseudo 3D affine transformation. Since the RP2040 "interpolator" does most of the work this works with a frame rate sufficient for full screen display.
 
-*kx* , *ky* , w and h state the size of the image in the framebuffer. *px*, *py* and *pz* state the translation of the map (what part of the map you get to see) and *pr* states the rotation. See *Pico Racer* example.
+`kx` , `ky` , w and h state the size of the image in the framebuffer. `px`, `py` and `pz` state the translation of the map (what part of the map you get to see) and `pr` states the rotation. See *Pico Racer* example. `alpha` defines the color which is not being drawn (BLIT_NO_ALPHA for no transparency).
 
 
 ```
-void blit_tile_map_rot(coord_t kx,            // start in fb window x
-                       coord_t ky,            // start in fb window y
-                       coord_t w,             // window width
-                       coord_t h,             // window height
-                       coord_t px,            // translation within window
-                       coord_t py,  
-                       coord_t pivot_x,       // pivot point (in screen/buffer coords, 0/0 is upper left corner)
-                       coord_t pivot_y,  
-                       float rot,             // angle
-                       float zoom_x,          // zoom in horizontal direction
-                       float zoom_y,          // zoom in vertical direction
-                       tile_map_t map_data,   // map data
-                       tile_data_t tile_set,  // tile data
-                       gbuffer_t buf)         // pointer to destination buffer
+void tile_blit_rot(coord_t kx,            // start in fb window x
+                   coord_t ky,            // start in fb window y
+                   coord_t w,             // window width
+                   coord_t h,             // window height
+                   coord_t px,            // translation within window
+                   coord_t py,  
+                   coord_t pivot_x,       // pivot point (in screen/buffer coords, 0/0 is upper left corner)
+                   coord_t pivot_y,  
+                   float rot,             // angle
+                   float zoom_x,          // zoom in horizontal direction
+                   float zoom_y,          // zoom in vertical direction
+                   tile_map_t map_data,   // map data
+                   tile_data_t tile_set,  // tile data
+                   int32_t alpha,         // transparency
+                   gbuffer_t buf);        // pointer to destination buffer
 ```
 
-This blits a tile map in top down style. Since the RP2040 interpolator does most of the work this works with a frame rate sufficient for full screen display. See *Pico Racer* example.
+This blits a tile map in top down style. Since the RP2040's "interpolator" does most of the work this works with a frame rate sufficient for full screen display. See *Pico Racer* example.
 
-*kx* , *ky* , w and h state the size of the image in the (frame)buffer. *px* and *py*  state the translation of the map (what part of the map you get to see) and *pivot_x* and *pivot_y* state the coordinated of the pivot point in case you want to rotate the map by the angle *rot*. *zoom_x* and *zoom_y* state the zoom factor in horizontal resp. vertical direction.
+`kx` , `ky` , w and h state the size of the image in the (frame)buffer. `px` and `py`  state the translation of the map (what part of the map you get to see) and `pivot_x` and `pivot_y` state the coordinated of the pivot point in case you want to rotate the map by the angle `rot`. `zoom_x` and `zoom_y` state the zoom factor in horizontal resp. vertical direction. `alpha` defines the color which is not being drawn (BLIT_NO_ALPHA for no transparency).
 
 
 ### sound
 
-`int  snd_enque_buf(uint8_t *ext_buf, uint32_t buffersize, uint8_t num_snd_channel, bool blocking) `
+This modules handles the playback of sounds. There are four sound channels which can be assigned buffers for playback. All currently playing buffers are mixed on the fly and sent via DMA to the PIO which then handles the PWM playback. The buffer format is a raw 8 bit PCM format. You need to specify the playback frequency using `snd_set_freq()`. All buffers play back with the same frequency and volume. The (master) volume can be set using `snd_set_vol(uint8_t vol)`. 
 
-Enques a buffer to be played. *ext_buf* is a pointer to an unsigned 8 bit array of a PCM buffer. You may state one of four channels (SND_CHAN_0 to SND_CHAN_3). If _blocking_ is set to SND_BLOCKING then the funciont will only return once the buffer is enqueued (if there is no free buffer, the function waits). If set to SND_NONBLOCKING, the function will immediately return even if the buffer was unable to be enqueued. If the buffer was successfully enqueued *SND_SUCCESS* is returned.
+`int  snd_enque_buf(uint8_t *ext_buf, uint32_t buffersize, uint8_t num_snd_channel, bool blocking)`
+
+Enques a buffer to be played. `ext_buf` is a pointer to an unsigned 8 bit array of a PCM buffer. You may state one of four channels (SND_CHAN_0 to SND_CHAN_3). If _blocking_ is set to `SND_BLOCKING` then the function will only return once the buffer is successfully enqueued (if there is no free buffer, the function will wait for a free buffer). If set to `SND_NONBLOCKING`, the function will immediately return even if the buffer was unable to be enqueued. If the buffer was successfully enqueued `SND_SUCCESS` is returned.
 The buffer will be played with support of DMA and interrupts. So this is mostly fire-and-forget. Once the buffer is enqueued, it will be played without any further action needed.
 
 `int  snd_num_bufs_free(uint8_t num_snd_channel)`
 
 Returns the number of free buffers.
 
-`int  snd_num_bufs_waiting(uint8_t num_snd_channel) `
+`int  snd_num_bufs_waiting(uint8_t num_snd_channel)`
 
 Returns the number of buffers waiting (0 means idle)
 
 `int  snd_cancel_channel(uint8_t num_snd_channel)`
 
-Cancels playback on given channel (*SND_CHAN_ALL* cancels all playback)
+Cancels playback on given channel (`SND_CHAN_ALL` cancels all playback)
 
 `int  snd_set_freq(uint32_t freq)`
 
