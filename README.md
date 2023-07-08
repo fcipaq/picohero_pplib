@@ -34,6 +34,8 @@ Parts (older version without SD card)
 
 *Pico Hero* running modified Sega Mega Drive emulator by bzhxx (https://github.com/bzhxx/gwenesis)
 
+Watch the introduction on [Youtube](https://youtu.be/RlWg1duhfp8).
+
 I will add more repositories, tools and details in time. Also, I am going to add Gerber files and schematics as well as STL files for printing/building the case. Consider this as preview. Please be patient, I am going at full speed.
 
 ## Specs:
@@ -41,8 +43,8 @@ I will add more repositories, tools and details in time. Also, I am going to add
 - 3.2 inch LCD screen with 320x240 resolution with parallel interface to the RP2040
 - analog control stick, 3 buttons and on/off switch
 - 3W speaker
-- micro SD card slot (for space constraints it’s push/pull so a it’s a little fiddly to remove the SD card) 
-- size: 136mm x 60mm x 12mm; weight: 100g including 600 mAh battery
+- micro SD card slot tied via SPI (for space constraints it’s push/pull so a it’s a little fiddly to remove the SD card) 
+- dimenstions: 136mm x 60mm x 12mm; weight: 100g including 600 mAh battery
 - optional charging circuitry when using a RPi Pico module without charger logic.
 
 I originally intended to call the handheld *Pico Pad* – however a Czech company was a couple days faster.
@@ -184,7 +186,7 @@ Frees the data memory of a buffer object.
 
 ### blitter
 
-The blitter blits a source buffer to a destination buffer. The buffers may be different in size but must be of the same color depth. There is only one (overloaded) function.
+The blitter blits a source buffer to a destination buffer. The buffers may be different in dimensions but must be of the same color depth. There is only one (overloaded) function.
 
 ```
 void blit_buf(coord_t kx,    // coordinates of upper left corner
@@ -209,17 +211,17 @@ void blit_buf(coord_t kx,    // x-coord where to blit the of CENTER of the image
 
 Blits a buffer to another buffer at the position `kx`, `ky`, zooms it at the factor of `zoom` and rotates is at the angle of `rot`. Alpha states the transparent color (BLIT_NO_ALPHA for no transparency).
 Note: Due to the nature of how the rotation is done with the "interpolator", when rotating the original image must be smaller in size than the buffer containing it. In fact it needs to be smaller by a factor of sqrt(2) x sqrt(1.75). This is because otherwise there will be artifacts from the "interpolator" folding back parts of the image into the visible area.
-For example if the buffer is 16 by 8 pixels, the visible area must be centered and not exceed 8 by 4 pixels:
+For example if the buffer dimensions are 16 by 8 pixels, the visible area must be centered and not exceed 8 by 4 pixels:
 
-(X: allowed image area, O: blank area - background or "transparent color")
+(#: allowed image area, O: blank area - background or "transparent color")
 
 ```
 OOOOOOOOOOOOOOOO
 OOOOOOOOOOOOOOOO
-OOOOXXXXXXXXOOOO
-OOOOXXXXXXXXOOOO
-OOOOXXXXXXXXOOOO
-OOOOXXXXXXXXOOOO
+OOOO########OOOO
+OOOO########OOOO
+OOOO########OOOO
+OOOO########OOOO
 OOOOOOOOOOOOOOOO
 OOOOOOOOOOOOOOOO
 ```
@@ -306,7 +308,7 @@ void tile_blit_mode7(coord_t kx,           // start in fb window x
 
 This blits a tile map in SNES-mode-7-style. A pseudo 3D affine transformation. Since the RP2040 "interpolator" does most of the work this works with a frame rate sufficient for full screen display.
 
-`kx` , `ky` , w and h state the size of the image in the framebuffer. `px`, `py` and `pz` state the translation of the map (what part of the map you get to see) and `pr` states the rotation. See *Pico Racer* example. `alpha` defines the color which is not being drawn (BLIT_NO_ALPHA for no transparency).
+`kx`, `ky`, w and h state the size of the image in the framebuffer. `px`, `py` and `pz` state the translation of the map (what part of the map you get to see) and `pr` states the rotation. See *Pico Racer* example. `alpha` defines the color which is not being drawn (BLIT_NO_ALPHA for no transparency).
 
 
 ```
@@ -329,7 +331,7 @@ void tile_blit_rot(coord_t kx,            // start in fb window x
 
 This blits a tile map in top down style. Since the RP2040's "interpolator" does most of the work this works with a frame rate sufficient for full screen display. See *Pico Racer* example.
 
-`kx` , `ky` , w and h state the size of the image in the (frame)buffer. `px` and `py`  state the translation of the map (what part of the map you get to see) and `pivot_x` and `pivot_y` state the coordinated of the pivot point in case you want to rotate the map by the angle `rot`. `zoom_x` and `zoom_y` state the zoom factor in horizontal resp. vertical direction. `alpha` defines the color which is not being drawn (BLIT_NO_ALPHA for no transparency).
+`kx`, `ky`, `w` and `h` state the size of the image in the (frame)buffer. `px` and `py`  state the translation of the map (what part of the map you get to see) and `pivot_x` and `pivot_y` state the coordinated of the pivot point in case you want to rotate the map by the angle `rot`. `zoom_x` and `zoom_y` state the zoom factor in horizontal resp. vertical direction. `alpha` defines the color which is not being drawn (BLIT_NO_ALPHA for no transparency).  See *Pico Racer* example.
 
 
 ### sound
