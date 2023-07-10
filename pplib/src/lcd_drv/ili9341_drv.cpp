@@ -3,9 +3,23 @@
  *
  * https://github.com/Bodmer/TFT_eSPI/blob/master/TFT_Drivers/ILI9341_Defines.h
  *
- * see Github site for liscense details
+ * Please see Github site for license details.
  */
- 
+
+#include "../hwcfg.h"
+
+#ifdef LCD_DRIVER_ILI9341
+
+#include <Arduino.h>
+#include "ili9341_drv.h"
+
+/* ==================== forward declarations ==================== */
+void lcd_send_dat_byte(uint8_t cmd);
+void lcd_send_cmd_byte(uint8_t cmd);
+void set_rs(byte value);
+void set_rst(byte value);
+
+/* ==================== functions ==================== */
 void lcd_enable_te() {
   lcd_send_cmd_byte(ILI9341_TEON);
   lcd_send_dat_byte(0x00); // V-blank info only
@@ -54,7 +68,7 @@ void lcd_set_addr(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2) {
   #endif
 }
 
-void lcdControllerInit() {
+void lcd_controller_init() {
   pinMode(PIN_LCD_TE, INPUT);
 
   set_rst(HIGH);
@@ -196,3 +210,5 @@ void lcdControllerInit() {
     lcd_send_dat_byte(0x00);
 
 }
+
+#endif

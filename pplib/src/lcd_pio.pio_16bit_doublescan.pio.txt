@@ -30,7 +30,7 @@ public tx_dat:
     mov    pins, x
     out    y, 8            side 1
     mov    pins, y         side 0
-    nop                    side 1
+    nop                    side 1   ; with the nops we lose 2 cycles here, but gain more cycles overall cause we can let the PIO run twice as fast without exceeding the ratings of the LCD conroller
     mov    pins, x         side 0
     nop                    side 1
     mov    pins, y         side 0

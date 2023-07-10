@@ -66,22 +66,22 @@ The whole library is built around Earle Philhower's Raspberry Pi Pico Arduino co
 RAM
 
 - Display:
-  - at least 19 KB RAM (8 bit, 160x120, single FB) up to 154 KB (16 bit, 320x240, single FB)   
+  - at least 19 KB RAM (e.g. 8 bit, 160x120, single FB) up to 154 KB (e.g. 16 bit, 320x240, single FB)   
   - 512 bytes of scratch-x memory when using 8 bit mode (for the palette LUT)
+  - 1 state machine from PIO0 in 16 bit mode and 1 additional state machine when using 8 bit mode
+  - 1 DMA channel (2 additional DMA channels when using 8 bit and custom color palette)
 
 - Sound:
   - typically 3 KB sound buffer (depends on config)
-
-- PIO
-  - 2 state machines from PIO0 in 16 bit mode and one additional state machine when using 8 bit mode
-
-- DMA
-  - 2 DMA channels (2 additional DMA channels when using 8 bit and custom color palette)
+  - 1 state machine from PIO0
+  - 1 DMA channel
 
 # Installation
 
-Place the *pplib* directory into your Arduino libraries folder. Next, install Earle Philhower's Raspberry Pi Pico Arduino core. The library is meant to be used with Arduino. It is written in non-object-oriented C++. At first you need to setup the hardware (16 bit or 8 bit color depth, resolution, panel fitter). See setup.h for details. Your sketch has then to call pplInit() right at the beginning. 
-That’s it. You may now build the examples.
+The library is meant to be used with Arduino. It is written in non-object-oriented C++.
+Place the *pplib* directory into your Arduino libraries folder. Next, install Earle Philhower's Raspberry Pi Pico Arduino core. 
+Next step is to setup the hardware (16 bit or 8 bit color depth, resolution, panel fitter). See setup.h for details. Your sketch has then to call `ppl_init()` right at the beginning. 
+That’s it. You may now build the examples. For further details see the examples.
 
 # Setup
 
@@ -101,6 +101,9 @@ States the screen orientation. Possible values are:
 3 = 270° (landscape upside down)
 
 `LCD_COLORDEPTH`
+
+This determines the color depth of the LCD interface. When set to `8`  
+
 `LCD_DOUBLE_PIXEL_LINEAR`  // works with 16 bit mode only
 `LCD_DOUBLE_PIXEL_NEAREST`
 
@@ -115,7 +118,7 @@ States the screen orientation. Possible values are:
 
 ### pplib
 
-`int pplInit()`
+`int ppl_init()`
 
 This function is called to initialize all the hardware on the *Pico Hero*. It’s supposed to be called right at the beginning of `setup()`. This also does the bootloader handling (press all three buttons when powering up the *Pico Hero* to enter bootloader mode) – so it’s very important.
 On success zero is returned otherwise an error code. If the LCD initialization fails, the bootloader is called.
@@ -128,7 +131,7 @@ This is the hardware layer to interface with the LCD
 `void lcd_set_speed(uint32_t freq)`
 This sets the LCD interface speed to the ILI9341. Specs state a max frequency of approx. 30 MHz however 100 MHz should work fine. You should not call this in the middle of program execution (it’s called from `ppl_init()`). When the CPU is being overclocked, the function is aware of that and the PIO speed adjusted accordingly.
 
-`int  lcd_show_framebuffer(gbuffer_t buf)`
+`int lcd_show_framebuffer(gbuffer_t buf)`
 
 Sends a graphics buffer to the LCD.
 
@@ -136,7 +139,7 @@ Sends a graphics buffer to the LCD.
 
 Waits until a pending buffer has been sent to the LCD.
 
-`int  lcd_check_ready()`
+`int lcd_check_ready()`
 
 Returns `true´ if the transmission subsystem is idle (i.e. is ready to send another buffer).
 
@@ -189,14 +192,14 @@ Frees the data memory of a buffer object.
 The blitter blits a source buffer to a destination buffer. The buffers may be different in dimensions but must be of the same color depth. There is only one (overloaded) function.
 
 ```
-void blit_buf(coord_t kx,    // coordinates of upper left corner
-              coord_t ky,    
-              gbuffer_t src, // source buffer
-              gbuffer_t dst, // destination buffer
-              int32_t alpha)
+void blit_buf(coord_t kx,     // coordinates of upper left corner
+              coord_t ky,
+              int32_t alpha,
+              gbuffer_t src,  // pointer to source buffer
+              gbuffer_t dst)  // pointer to destination buffer
 ```
 
-Blits a buffer to another buffer at the position `kx`, `ky`. Alpha states the transparent color (BLIT_NO_ALPHA for no transparency)
+Blits a buffer to another buffer at the position `kx`, `ky`. `alpha` states the transparent color (BLIT_NO_ALPHA for no transparency)
 
 
 ```
@@ -209,7 +212,7 @@ void blit_buf(coord_t kx,    // x-coord where to blit the of CENTER of the image
               gbuffer_t dst) // pointer to destination buffer
 ```
 
-Blits a buffer to another buffer at the position `kx`, `ky`, zooms it at the factor of `zoom` and rotates is at the angle of `rot`. Alpha states the transparent color (BLIT_NO_ALPHA for no transparency).
+Blits a buffer to another buffer at the position `kx`, `ky`, zooms it at the factor of `zoom` and rotates is at the angle of `rot`. `alpha` states the transparent color (BLIT_NO_ALPHA for no transparency).
 Note: Due to the nature of how the rotation is done with the "interpolator", when rotating the original image must be smaller in size than the buffer containing it. In fact it needs to be smaller by a factor of sqrt(2) x sqrt(1.75). This is because otherwise there will be artifacts from the "interpolator" folding back parts of the image into the visible area.
 For example if the buffer dimensions are 16 by 8 pixels, the visible area must be centered and not exceed 8 by 4 pixels:
 
@@ -227,7 +230,7 @@ OOOOOOOOOOOOOOOO
 ```
 
 This is somewhat a tradeoff between memory usage and  performance. Images are therefore best stored in flash.
-Both width and height of the image size must be power of 2.
+Both width and height of the image size must be power of 2. Using square dimensions is advised to prevent fold artifacts, however this consumes more storage.
 
 
 ```
@@ -235,14 +238,13 @@ void blit_buf(coord_t kx,     // x-coord where to blit the of CENTER of the imag
               coord_t ky,     // y-coord where to blit the of CENTER of the image
               float zoom_x,   // zoom factor in x direction
               float zoom_y,   // zoom factor in y direction
-              uint8_t flip_x, // whether to flip horizontally (1 means flip, 0 means
-              uint8_t flip_y, // whether to flip vertically
+              uint8_t flip,   // whether to flip the image
               int32_t alpha,  // color which is NOT being drawn (BLIT_NO_ALPHA for no transparency)
               gbuffer_t src,  // pointer to source buffer
               gbuffer_t dst)  // pointer to destination buffer
 ```
 
-Blits a buffer to another buffer at the position `kx`, `ky`, zooms it in horizontal direction with the factor of `zoom_x` in vertical direction with the factor of `zoom_y`.  `flip_x` and `flip_y` state if the buffer shall be flipped (0 = no flipping, 1 = flipping). Alpha states the transparent color (BLIT_NO_ALPHA for no transparency)
+Blits a buffer to another buffer at the position `kx`, `ky`, zooms it in horizontal direction with the factor of `zoom_x` in vertical direction with the factor of `zoom_y`. `flip` states whether to flip the image (use `BLIT_FLIP_HORI`, `BLIT_FLIP_VERT` and `BLIT_FLIP_ALL` to determine how to flip the image). Alpha states the transparent color (`BLIT_NO_ALPHA` for no transparency).
 Since this operation is accelerated by the use of the "interpolator", both width and height of the image size must be power of 2.
 
 ### colors
@@ -264,7 +266,7 @@ Ranges - r: 0..255, g: 0..255 and b: 0..255
 Returns the color in 16 bit machine readable format when given r g and b values in 16 bits. R-G-B 5-6-5
 Ranges - r: 0..31, g: 0..63 and b: 0..31
    
-`color8_t  rgb_col_332_332(uint8_t r, uint8_t g, uint8_t b)`
+`color8_t rgb_col_332_332(uint8_t r, uint8_t g, uint8_t b)`
 
 Returns the color in 8 bit machine readable format when given r g and b values in 8 bits. (R-G-B 3-3-2)
 Ranges - r: 0..7, g: 0..7 and b: 0..3
@@ -338,24 +340,24 @@ This blits a tile map in top down style. Since the RP2040's "interpolator" does 
 
 This modules handles the playback of sounds. There are four sound channels which can be assigned buffers for playback. All currently playing buffers are mixed on the fly and sent via DMA to the PIO which then handles the PWM playback. The buffer format is a raw 8 bit PCM format. You need to specify the playback frequency using `snd_set_freq()`. All buffers play back with the same frequency and volume. The (master) volume can be set using `snd_set_vol(uint8_t vol)`. 
 
-`int  snd_enque_buf(uint8_t *ext_buf, uint32_t buffersize, uint8_t num_snd_channel, bool blocking)`
+`int snd_enque_buf(uint8_t *ext_buf, uint32_t buffersize, uint8_t num_snd_channel, bool blocking)`
 
 Enques a buffer to be played. `ext_buf` is a pointer to an unsigned 8 bit array of a PCM buffer. You may state one of four channels (SND_CHAN_0 to SND_CHAN_3). If _blocking_ is set to `SND_BLOCKING` then the function will only return once the buffer is successfully enqueued (if there is no free buffer, the function will wait for a free buffer). If set to `SND_NONBLOCKING`, the function will immediately return even if the buffer was unable to be enqueued. If the buffer was successfully enqueued `SND_SUCCESS` is returned.
 The buffer will be played with support of DMA and interrupts. So this is mostly fire-and-forget. Once the buffer is enqueued, it will be played without any further action needed.
 
-`int  snd_num_bufs_free(uint8_t num_snd_channel)`
+`int snd_num_bufs_free(uint8_t num_snd_channel)`
 
 Returns the number of free buffers.
 
-`int  snd_num_bufs_waiting(uint8_t num_snd_channel)`
+`int snd_num_bufs_waiting(uint8_t num_snd_channel)`
 
 Returns the number of buffers waiting (0 means idle)
 
-`int  snd_cancel_channel(uint8_t num_snd_channel)`
+`int snd_cancel_channel(uint8_t num_snd_channel)`
 
 Cancels playback on given channel (`SND_CHAN_ALL` cancels all playback)
 
-`int  snd_set_freq(uint32_t freq)`
+`int snd_set_freq(uint32_t freq)`
 
 Sets the playback frequency.
 

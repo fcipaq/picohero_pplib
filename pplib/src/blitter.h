@@ -25,14 +25,18 @@
 #include "typedefs.h"
 
 /* ======================== definitions ========================= */
-#define BLIT_NO_ALPHA -1
+#define BLIT_NO_ALPHA  -1
+#define BLIT_FLIP_NONE  0
+#define BLIT_FLIP_HORI  1
+#define BLIT_FLIP_VERT  2
+#define BLIT_FLIP_ALL   4
 
 /* ====================== function declarations ====================== */
 void blit_buf(coord_t kx,     // coordinates of upper left corner
               coord_t ky,
+              int32_t alpha,
               gbuffer_t src,  // pointer to source buffer
-              gbuffer_t dst,  // pointer to destination buffer
-              int32_t alpha);
+              gbuffer_t dst);  // pointer to destination buffer
 
 void blit_buf(coord_t kx,       // x-coord where to blit the of CENTER of the image
               coord_t ky,       // y-coord where to blit the of CENTER of the image
@@ -46,8 +50,7 @@ void blit_buf(coord_t kx,       // x-coord where to blit the of CENTER of the im
               coord_t ky,       // y-coord where to blit the of CENTER of the image
               float zoom_x,     // zoom factor in x direction
               float zoom_y,     // zoom factor in y direction
-              uint8_t flip_x,   // whether to flip horizontally (1 means flip, 0 means
-              uint8_t flip_y,   // whether to flip vertically
+              uint8_t flip,     // whether to flip the image
               int32_t alpha,    // color which is NOT being drawn (BLIT_NO_ALPHA for no transparency)
               gbuffer_t src,    // pointer to source buffer
               gbuffer_t dst);   // pointer to destination buffer

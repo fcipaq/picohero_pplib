@@ -35,6 +35,7 @@
 #define LCD_PIO_ERR          -5
 
 /* --------------------- screen mode handling --------------------*/
+/*
 #if defined LCD_DOUBLE_PIXEL_LINEAR || defined LCD_DOUBLE_PIXEL_NEAREST
   #if LCD_ROTATION==0 || LCD_ROTATION==2
     #define SCREEN_WIDTH   (PHYS_SCREEN_WIDTH / 2)
@@ -52,6 +53,7 @@
     #define SCREEN_HEIGHT  PHYS_SCREEN_WIDTH
   #endif
 #endif
+*/
 
 #define lcd_get_screen_width() (SCREEN_WIDTH)
 #define lcd_get_screen_height() (SCREEN_HEIGHT)

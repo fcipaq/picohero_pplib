@@ -58,6 +58,7 @@
 #define PIN_SD_MISO       16
 
 /* ---------------------- TFT driver ----------------------*/
-#include "lcd_drv/ili9341_defines.h"
+#define LCD_DRIVER_ILI9341
+#include "lcd_drv/ili9341_drv.h"
 
 #endif //HWCFG_H

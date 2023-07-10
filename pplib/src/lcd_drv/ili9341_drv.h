@@ -3,16 +3,40 @@
  *
  * https://github.com/Bodmer/TFT_eSPI/blob/master/TFT_Drivers/ILI9341_Defines.h
  *
- * see Github site for liscense details
+ * Please see Github site for license details.
  */
 
 #ifndef ILI9341_DRV_H
 #define ILI9341_DRV_H
 
+/* ======================== includes ============================= */
+#include <Arduino.h>
+#include "../setup.h"
+
+/* ======================== defines ============================= */
 /* ---------------------- screen dimensions ----------------------*/
 // physical values
 #define PHYS_SCREEN_WIDTH   240
 #define PHYS_SCREEN_HEIGHT  320
+
+/* --------------------- screen mode handling --------------------*/
+#if defined LCD_DOUBLE_PIXEL_LINEAR || defined LCD_DOUBLE_PIXEL_NEAREST
+  #if LCD_ROTATION==0 || LCD_ROTATION==2
+    #define SCREEN_WIDTH   (PHYS_SCREEN_WIDTH / 2)
+    #define SCREEN_HEIGHT  (PHYS_SCREEN_HEIGHT / 2)
+  #elif LCD_ROTATION==1 || LCD_ROTATION==3
+    #define SCREEN_WIDTH   (PHYS_SCREEN_HEIGHT / 2)
+    #define SCREEN_HEIGHT  (PHYS_SCREEN_WIDTH / 2)
+  #endif
+#else
+  #if LCD_ROTATION==0 || LCD_ROTATION==2
+    #define SCREEN_WIDTH   PHYS_SCREEN_WIDTH
+    #define SCREEN_HEIGHT  PHYS_SCREEN_HEIGHT
+  #elif LCD_ROTATION==1 || LCD_ROTATION==3
+    #define SCREEN_WIDTH   PHYS_SCREEN_HEIGHT
+    #define SCREEN_HEIGHT  PHYS_SCREEN_WIDTH
+  #endif
+#endif
 
 // Delay between some initialisation commands
 #define ILI9341_INIT_DELAY 0x80 // Not used unless commandlist invoked
@@ -121,5 +145,11 @@
 
 #define ILI9341_COLOR_SET  0x2D
 
+/* ==================== functions ==================== */
+void lcd_controller_init();
+void lcd_set_addr(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
+void lcd_enable_te();
+void lcd_disable_te();
+bool lcd_get_vblank();
 
 #endif

@@ -34,12 +34,12 @@
 
 /* ---------------------- color depth ----------------------*/
 // currently supported are 8 bits and 16 bits of colors
-#define LCD_COLORDEPTH 16
+#define LCD_COLORDEPTH 8
 
 /* ----------------- pixel doubling / panel fitting -----------------*/
 // please choose 1 or 0 fitters
 //#define LCD_DOUBLE_PIXEL_LINEAR  // works with 16 bit mode only
-//#define LCD_DOUBLE_PIXEL_NEAREST
+#define LCD_DOUBLE_PIXEL_NEAREST
 
 /* ========================= sanity check ========================= */
 #if LCD_COLORDEPTH!=8 && LCD_COLORDEPTH!=16

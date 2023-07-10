@@ -44,12 +44,6 @@
 /* ==================== mutex ==================== */
 mutex_t lcd_scanout_complete;
 
-/* ==================== forward declarations ==================== */
-void lcd_send_dat_byte(uint8_t cmd);
-void lcd_send_cmd_byte(uint8_t cmd);
-void set_rs(byte value);
-void set_rst(byte value);
-
 /* ========================= variables ========================== */
 /* ----------------------------- NN -----------------------------*/
 bool lcd_init_complete = false;
@@ -106,15 +100,6 @@ color_palette_t lcd_palette[256] __attribute__((aligned(512), section(".scratch_
 #endif
 
 /* ======================= implementation ======================== */
-
-/* ----------------------------- lcd driver -----------------------------*/
-#ifdef ILI9341_DRV_H
-#include "lcd_drv/ili9341_init.h"
-#elif defined ILI9488_DRV_H
-#include "lcd_drv/ili9488_init.h"
-#else
-#error NO LCD APPROPRIATE DRIVER SPECIFIED
-#endif
 
 #if LCD_COLORDEPTH==8
 color_palette_t* lcd_get_palette_ptr() {
@@ -252,7 +237,7 @@ void __isr lcd_dma_handler() {
   //multicore_launch_core1(txScanline);
   tx_scanline();
 #else
-    // if scanout is performed in one chunk, we're done when the IRQ is called
+  // if scanout is performed in one chunk, we're done when the IRQ is called
   mutex_exit(&lcd_scanout_complete);
 #endif
 
@@ -298,13 +283,13 @@ int lcd_dma_init() {
   channel_config_set_dreq(&lcd_dma_config[0], pio_get_dreq(lcd_pio, lcd_pio_tft_sm, true));
   channel_config_set_bswap(&lcd_dma_config[0], true);
   #elif LCD_COLORDEPTH == 8
-  // Channel 0: buffer --> SM
+  // Channel 0: user image buffer --> state machine
   channel_config_set_transfer_data_size(&lcd_dma_config[0], DMA_SIZE_8);
   channel_config_set_read_increment(&lcd_dma_config[0], true);
   channel_config_set_write_increment(&lcd_dma_config[0], false);
   channel_config_set_dreq(&lcd_dma_config[0], pio_get_dreq(lcd_pio, lcd_pio_lut_sm, true));
 
-  // Channel 1: do the actual table lookup: SM --> clut
+  // Channel 1: do the actual table lookup: state machine --> custom lut
   channel_config_set_transfer_data_size(&lcd_dma_config[1], DMA_SIZE_32);
   channel_config_set_read_increment(&lcd_dma_config[1], false);
   channel_config_set_write_increment(&lcd_dma_config[1], false);
@@ -361,8 +346,7 @@ int lcd_check_ready() {
 }  // lcd_check_ready
 
 void lcd_wait_ready() {
-  while (!mutex_try_enter(&lcd_scanout_complete, NULL))
-    ;
+  while (!mutex_try_enter(&lcd_scanout_complete, NULL));
   mutex_exit(&lcd_scanout_complete);
 }  // lcd_wait_ready
 
@@ -549,7 +533,7 @@ int lcd_init() {
   lcd_set_speed(LCD_PIO_SPEED * 1000000);
 
   // LCD controller setup (hardware dependent)
-  lcdControllerInit();
+  lcd_controller_init();
 
   if (lcd_dma_init() != LCD_SUCCESS)
     return LCD_DMA_ERR;

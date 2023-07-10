@@ -31,11 +31,11 @@
  * alpha must equal either BLIT_NO_ALPHA (no alpha channel) or the
  * color that shall be transparent
  */
-void blit_buf(coord_t kx,     // coordinates of upper left corner
+void blit_buf(coord_t kx,       // coordinates of upper left corner
               coord_t ky,
-              gbuffer_t src,  // pointer to source buffer
-              gbuffer_t dst,  // pointer to destination buffer
-              int32_t alpha) {
+              int32_t alpha,
+              gbuffer_t src,    // pointer to source buffer
+              gbuffer_t dst) {  // pointer to destination buffer
 
   uint16_t srcBufWidth = gbuf_get_width(src);
   uint16_t srcBufHeight = gbuf_get_height(src);
@@ -249,8 +249,7 @@ void blit_buf(coord_t kx,       // x-coord where to blit the of CENTER of the im
               coord_t ky,       // y-coord where to blit the of CENTER of the image
               float zoom_x,     // zoom factor in x direction
               float zoom_y,     // zoom factor in y direction
-              uint8_t flip_x,   // whether to flip horizontally (1 means flip, 0 means
-              uint8_t flip_y,   // whether to flip vertically
+              uint8_t flip,     // whether to flip the image
               int32_t alpha,    // color which is NOT being drawn (BLIT_NO_ALPHA for no transparency)
               gbuffer_t src,    // pointer to source buffer
               gbuffer_t dst) {  // pointer to destination buffer
@@ -347,12 +346,12 @@ void blit_buf(coord_t kx,       // x-coord where to blit the of CENTER of the im
 
   for (int y = start_y; y < end_y; ++y) {
     interp0->accum[0] = accum0_start;
-    if (flip_y)
+    if (flip && BLIT_FLIP_VERT)
       interp0->accum[1] = zoom[1] * (end_y + start_y - y - 1) + accum1_start;
     else
       interp0->accum[1] = zoom[1] * y + accum1_start;
 
-    if (flip_x) {
+    if (flip && BLIT_FLIP_HORI) {
       for (int x = end_x - 1; x >= start_x; x--) {
         color_t colour = *(color_t *)(interp0->pop[2]);
         if (colour != alpha)
