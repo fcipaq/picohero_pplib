@@ -82,7 +82,7 @@
   }
 
   void console::update() {
-    draw_fill_rect(_pos_x, _pos_y, _pos_x + _width, _pos_y + _height, _bkg_col, _buf);
+    draw_rect_fill(_pos_x, _pos_y, _pos_x + _width, _pos_y + _height, _bkg_col, _buf);
     for (int h = 0; h < _num_lines; h++)
       font_write_string(_pos_x, _pos_y + _height - (h + 1) * (_font_height + 4) - 2, _col, (char*) &_textbuffer[h * _max_columns], _font, _buf);
   }

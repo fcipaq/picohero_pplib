@@ -20,7 +20,7 @@
 
 #pragma GCC optimize("Ofast")
 
-#include "buttons.h"
+#include "controls.h"
 #include "hwcfg.h"
 
 uint16_t _analog_x_0 = 400;

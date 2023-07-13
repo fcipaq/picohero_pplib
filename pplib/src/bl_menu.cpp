@@ -24,12 +24,10 @@
 #include "setup.h"
 #include "gbuffers.h"
 #include "lcdcom.h"
-#include "buttons.h"
-//#include "fonts.h"
+#include "controls.h"
 #include "colors.h"
 
 #include "bl_image.h"
-#include "fonts/f13x16.h"
 
 #include "pico/bootrom.h"
 
@@ -37,7 +35,7 @@
 
 // Enters bootloader in case all buttons are pressed during system reset
 bool bl_check_selection() {
-  uint16_t buttons = getButtons();
+  uint16_t buttons = ctrl_button_state();
 
   if ( (buttons & BUTTON_1) && 
        (buttons & BUTTON_2) && 
@@ -145,9 +143,9 @@ void bl_menu() {
   int ofs_x = lcd_get_screen_width() / 2 - bl_menu_image[0] / 2 / color_corr;
   int ofs_y = 30 / color_corr;//lcd_get_screen_height() / 2 - gbuf_get_width((gbuffer_t*) bl_menu_image) / 2;
 
-  while (!getButtons() || !button_debounce) {
+  while (!ctrl_button_state() || !button_debounce) {
     if (!button_debounce) {
-      if (getButtons()) {
+      if (ctrl_button_state()) {
         timer_deb = millis();
       } else {
         if (millis() - timer_deb > 100)
@@ -247,7 +245,7 @@ void bl_menu() {
         lb_back = lb1;
     }
 
-    uint16_t dpad = getDPad();
+    uint16_t dpad = ctrl_dpad_state();
 
     if (dpad) {
       if (millis() - timer_dpad > 350) {

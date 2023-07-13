@@ -23,7 +23,6 @@ Back view
 
 ![Pico Hero picture 4](images/top.jpg)
 
-
 Top view
 
 ![Pico Hero picture 5](images/parts.jpg)
@@ -36,7 +35,13 @@ Parts (older version without SD card)
 
 Watch the introduction on [Youtube](https://youtu.be/RlWg1duhfp8).
 
-I will add more repositories, tools and details in time. Also, I am going to add Gerber files and schematics as well as STL files for printing/building the case. Consider this as preview. Please be patient, I am going at full speed.
+Examples are [here](https://github.com/fcipaq/picohero_examples).
+
+Utilities can be found [here](https://github.com/fcipaq/picohero_utils/).
+
+Schematics/Gerber files yet to be uploaded.
+
+Consider this as preview, still in alpha stage.
 
 ## Specs
 
@@ -600,3 +605,7 @@ Sets the volume level (from 0 to 5)
 `void draw_rect_fill(coord_t x1, coord_t y1, coord_t x2, coord_t y2, color_t color, gbuffer_t dst)`
 `void draw_circle(coord_t x1, coord_t y1, uint16_t radius, color_t color, gbuffer_t dst)`
 `void draw_circle_fill(coord_t x1, coord_t y1, uint16_t radius, color_t color, gbuffer_t dst)`
+
+## power
+
+## controls

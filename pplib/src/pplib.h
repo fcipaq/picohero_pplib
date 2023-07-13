@@ -25,7 +25,7 @@
 // HAL
 #include <lcdcom.h>
 #include <sound.h>
-#include <buttons.h>
+#include <controls.h>
 #include <power.h>
 #include <setup.h>
 
