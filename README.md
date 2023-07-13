@@ -493,7 +493,6 @@ This blits a tile map in top down style. Since the RP2040's "interpolator" does 
 
 `kx`, `ky`, `w` and `h` state the size of the image in the (frame)buffer. `px` and `py`  state the translation of the map (what part of the map you get to see) and `pivot_x` and `pivot_y` state the coordinated of the pivot point in case you want to rotate the map by the angle `rot`. `zoom_x` and `zoom_y` state the zoom factor in horizontal resp. vertical direction. `alpha` defines the color which is not being drawn (BLIT_NO_ALPHA for no transparency).  See *Pico Racer* example.
 
-
 ## sound
 
 ### Summary
@@ -588,3 +587,16 @@ Sets the playback frequency.
 `void snd_set_vol(uint8_t vol)`
 
 Sets the volume level (from 0 to 5)
+
+## drawing primitives
+
+//TODO
+
+### Functions
+
+`void draw_pixel(coord_t x, coord_t y, color_t color, gbuffer_t dst)`
+`void draw_line(coord_t x1, coord_t y1, coord_t x2, coord_t y2, color_t color, gbuffer_t dst)`
+`void draw_rect(coord_t x1, coord_t y1, coord_t x2, coord_t y2, color_t color, gbuffer_t dst)`
+`void draw_rect_fill(coord_t x1, coord_t y1, coord_t x2, coord_t y2, color_t color, gbuffer_t dst)`
+`void draw_circle(coord_t x1, coord_t y1, uint16_t radius, color_t color, gbuffer_t dst)`
+`void draw_circle_fill(coord_t x1, coord_t y1, uint16_t radius, color_t color, gbuffer_t dst)`

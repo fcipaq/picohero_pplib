@@ -325,7 +325,7 @@ void sanitize_rect(coord_t *x1, coord_t *y1, coord_t *x2, coord_t *y2, gbuffer_t
   }
 }
 
-void draw_fill_rect(coord_t x1, coord_t y1, coord_t x2, coord_t y2, color_t color, gbuffer_t dst) {
+void draw_rect_fill(coord_t x1, coord_t y1, coord_t x2, coord_t y2, color_t color, gbuffer_t dst) {
   sanitize_rect(&x1, &y1, &x2, &y2, dst);
 
   uint16_t rect_width = x2 - x1 + 1;

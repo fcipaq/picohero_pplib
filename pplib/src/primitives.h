@@ -27,7 +27,7 @@
 /* ====================== function declarations ====================== */
 // Drawing primitives
 void draw_pixel(coord_t x, coord_t y, color_t color, gbuffer_t dst);
-void draw_fill_rect(coord_t x1, coord_t y1, coord_t x2, coord_t y2, color_t color, gbuffer_t dst);
+void draw_rect_fill(coord_t x1, coord_t y1, coord_t x2, coord_t y2, color_t color, gbuffer_t dst);
 void draw_rect(coord_t x1, coord_t y1, coord_t x2, coord_t y2, color_t color, gbuffer_t dst);
 void draw_line(coord_t x1, coord_t y1, coord_t x2, coord_t y2, color_t color, gbuffer_t dst);
 void draw_line_interp(coord_t x1, coord_t y1, coord_t x2, coord_t y2, color_t color, gbuffer_t dst);
