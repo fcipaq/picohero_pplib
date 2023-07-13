@@ -38,7 +38,7 @@ Watch the introduction on [Youtube](https://youtu.be/RlWg1duhfp8).
 
 I will add more repositories, tools and details in time. Also, I am going to add Gerber files and schematics as well as STL files for printing/building the case. Consider this as preview. Please be patient, I am going at full speed.
 
-##Specs
+## Specs
 
 - 3.2 inch LCD screen with 320x240 resolution with parallel interface to the RP2040
 - analog control stick, 3 buttons and on/off switch
@@ -53,7 +53,7 @@ Now, the device features a simple library which does the hardware handling. The 
 
 The whole library is built around Earle Philhower's Raspberry Pi Pico Arduino core (no further dependencies are involve). 
 
-##Core features
+## Core features
 
 - screen: 16 bit and 8 bit (must choose at compile time) buffers, full and half resolution panel fitter (nearest neighbor and experimental linear filter)
 - fast blitter (using the RP2040's "interpolator") with zooming/rotation
@@ -61,7 +61,7 @@ The whole library is built around Earle Philhower's Raspberry Pi Pico Arduino co
 - sound library for sound output (8 bit PCM up to 22000 Hz) with four channels for mixing
 - font library with the ability to import true type fonts (FontEditor written by H. Reddmann)
 
-##Requirements
+## Requirements
 
 RAM
 
@@ -76,20 +76,20 @@ RAM
   - 1 state machine from PIO0
   - 1 DMA channel
 
-#Installation
+# Installation
 
 The library is meant to be used with Arduino. It is written in non-object-oriented C++.
 Place the *pplib* directory into your Arduino libraries folder. Next, install Earle Philhower's Raspberry Pi Pico Arduino core. 
 Next step is to setup the hardware (16 bit or 8 bit color depth, resolution, panel fitter). See setup.h for details. Your sketch has then to call `ppl_init()` right at the beginning. 
 That’s it. You may now build the examples. For further details see the examples.
 
-#Setup
+# Setup
 
-###Summary
+### Summary
 
 Some compile time hardware setup can be done in setup.h
 
-###Compiler switches
+### Compiler switches
 
 `LCD_PIO_SPEED`
  
@@ -113,13 +113,13 @@ This determines the color depth of the LCD interface. When set to `8`
 
 # Library description
 
-##pplib
+## pplib
 
-###Summary
+### Summary
 
 This is the wrapper for all other modules. Include `pplib.h` into your project to enable the use of the *Pico Hero* library.
 
-###Functions
+### Functions
 
 `int ppl_init()`
 
@@ -129,11 +129,11 @@ On success zero is returned otherwise an error code. If the LCD initialization f
 
 ##lcdcom
 
-###Summary
+### Summary
 
 This is the hardware layer to interface with the LCD
 
-###Constants
+### Constants
 
 Error messages:
 
@@ -157,7 +157,7 @@ Setting up the PIO failed.
 
 Undefined error.
 
-###Functions
+### Functions
 
 `void lcd_set_speed(uint32_t freq)`
 This sets the LCD interface speed to the ILI9341. Specs state a max frequency of approx. 30 MHz however 100 MHz should work fine. You should not call this in the middle of program execution (it’s called from `ppl_init()`). When the CPU is being overclocked, the function is aware of that and the PIO speed adjusted accordingly.
@@ -191,15 +191,15 @@ Disables the tearing signal.
 Returns the current state of the tearing signal. 
 
 
-##gbuffers
+## gbuffers
 
-###Summary
+### Summary
 
 All graphics are rendered into objects called graphics buffers (gbuffer_t). Those contain the information about the image size and color depth as well as a pointer to the actual image data.
 The functions are overloaded to work with 8 bit as well as 16 bit color depths.
 The library does not support rendering graphics (e.g. a line or a circle) directly to the screen.
 
-###Constants
+### Constants
 
 `BUF_SUCCESS`
 
@@ -209,7 +209,7 @@ No error.
 
 Insufficient RAM.
 
-###Types
+### Types
 
 ```
 typedef struct
@@ -221,7 +221,7 @@ typedef struct
 } gbuffer_t;
 ```
 
-###Functions
+### Functions
 
 `uint16_t  gbuf_get_width(gbuffer8_t buf)`
 
@@ -244,13 +244,13 @@ Returns the data pointer of a buffer object.
 Frees the data memory of a buffer object.
 
 
-##blitter
+## blitter
 
-###Summary
+### Summary
 
 The blitter blits a source buffer to a destination buffer. The buffers may be different in dimensions but must be of the same color depth. There is only one (overloaded) function.
 
-###Constants
+### Constants
 
 `BLIT_NO_ALPHA`
 
@@ -272,7 +272,7 @@ Blit an image flipping it vertically.
 
 Blit an image flipping it both horizontally and vertically.
 
-###Functions
+### Functions
 
 ```
 void blit_buf(coord_t kx,     // coordinates of upper left corner
@@ -330,19 +330,19 @@ void blit_buf(coord_t kx,     // x-coord where to blit the of CENTER of the imag
 Blits a buffer to another buffer at the position `kx`, `ky`, zooms it in horizontal direction with the factor of `zoom_x` in vertical direction with the factor of `zoom_y`. `flip` states whether to flip the image (use `BLIT_FLIP_HORI`, `BLIT_FLIP_VERT` and `BLIT_FLIP_ALL` to determine how to flip the image). Alpha states the transparent color (`BLIT_NO_ALPHA` for no transparency).
 Since this operation is accelerated by the use of the "interpolator", both width and height of the image size must be power of 2.
 
-##colors
+## colors
 
-###Summary
+### Summary
 
 The color modules helps converting color formats.
 
-###Types:
+### Types:
 
 `typedef color16_t color_t`
 
 `typedef color8_t color_t`
 
-###Functions
+### Functions
 
 Colors may be converted, composed or channels may be extracted using the following functions:
 
@@ -378,17 +378,17 @@ Returns the green component of a RGB565 color as a value ranging from 0..63
 
 Returns the blue component of a RGB565 color as a value ranging from 0..31
 
-##fonts
+## fonts
 
-###Summary
+### Summary
 
 A small font drawing library is included. This library can do basic font drawing into graphics buffers. In order to import new fonts, please see `pplib_utils` repository.
 
-###Types
+### Types
 
 `typedef uint8_t font_t`
 
-###Functions
+### Functions
 
 `int font_get_width(font_t* font)`
 
@@ -418,9 +418,9 @@ Draws a string of characters of the font `font` to the coordinates `pos_x` and `
 
 Draws a horizintally centered string of characters of the font `font` to the coordinates `pos_x` and `pos_y` using the color `col` to the graphicsbuffer `dst`.
 
-##tile maps
+## tile maps
 
-###Summary
+### Summary
 
 Tiles maps are used to build environments out of tiles (in order to save storage). Tile maps consist of two components: a tile map that defines which tile has to be placed where. And the tile data containing the actual image information. If a tile is repeated multiple times, then storage memory may be saved.
 
@@ -428,7 +428,7 @@ Tile map objects (tile_map_t) contain an 8 bit array and that means there is a m
 
 The tiles themselves may be of 8 or 16 bit color depth. A constraint introduced by the way the "interpolator" handles the lookup is that the width and the height of a tile must be a power of 2 as does the width and the height of the map. For example a map may be 128 by 64 tiles. And each of the tiles may be of the size 64 by 32 pixels. All tiles of a tile data object are of the same size. Tile width multiplied by tile height must not exceed 65536.
 
-###Types
+### Types
 
 ```
 typedef struct 
@@ -449,7 +449,7 @@ typedef struct
 } tile_data_t;
 ```
 
-###Functions
+### Functions
 
 ```
 void tile_blit_mode7(coord_t kx,           // start in fb window x
@@ -494,13 +494,13 @@ This blits a tile map in top down style. Since the RP2040's "interpolator" does 
 `kx`, `ky`, `w` and `h` state the size of the image in the (frame)buffer. `px` and `py`  state the translation of the map (what part of the map you get to see) and `pivot_x` and `pivot_y` state the coordinated of the pivot point in case you want to rotate the map by the angle `rot`. `zoom_x` and `zoom_y` state the zoom factor in horizontal resp. vertical direction. `alpha` defines the color which is not being drawn (BLIT_NO_ALPHA for no transparency).  See *Pico Racer* example.
 
 
-##sound
+## sound
 
-###Summary
+### Summary
 
 This modules handles the playback of sounds. There are four sound channels which can be assigned buffers for playback. All currently playing buffers are mixed on the fly and sent via DMA to the PIO which then handles the PWM playback. The buffer format is a raw 8 bit PCM format. You need to specify the playback frequency using `snd_set_freq()`. All buffers play back with the same frequency and volume. The (master) volume can be set using `snd_set_vol(uint8_t vol)`. 
 
-###Constants
+### Constants
 
 `SND_NUM_BUFS`
 
@@ -562,7 +562,7 @@ Buffer queue is full.
 
 Undefined error.
 
-###Functions
+### Functions
 
 `int snd_enque_buf(uint8_t *ext_buf, uint32_t buffersize, uint8_t num_snd_channel, bool blocking)`
 
