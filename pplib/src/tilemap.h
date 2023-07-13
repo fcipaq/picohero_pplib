@@ -22,7 +22,7 @@
 #define TILEMAP_H
 
 #define tile_blit(kx, ky, w, h, px, py, zoom_x, zoom_y, map_data, tile_set, alpha, fb) \
-        tile_blit_rot(kx, ky, w, h, px, py, 0, 0, 0, zoom_x, zoom_y, map_data, tile_set, alpha, fb)
+        tile_blit_rot(kx, ky, w, h, px, py, 0, 0, 0., zoom_x, zoom_y, map_data, tile_set, alpha, fb)
 	
 void tile_blit_rot(coord_t kx,            // start in fb window x
                    coord_t ky,            // start in fb window y

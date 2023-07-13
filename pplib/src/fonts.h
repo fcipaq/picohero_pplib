@@ -26,8 +26,8 @@
 
 /* ==================== function declarations =================== */
 // measurement
-int  font_get_height(font_t* font);
 int  font_get_width(font_t* font);
+int  font_get_height(font_t* font);
 int  font_get_char_width(char c, font_t* font);
 int  font_get_string_width(char* str, font_t* font);
 

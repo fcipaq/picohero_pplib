@@ -27,6 +27,7 @@
 #include <sound.h>
 #include <buttons.h>
 #include <power.h>
+#include <setup.h>
 
 // Bootloader
 #include <bl_menu.h>

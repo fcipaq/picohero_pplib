@@ -38,7 +38,7 @@ Watch the introduction on [Youtube](https://youtu.be/RlWg1duhfp8).
 
 I will add more repositories, tools and details in time. Also, I am going to add Gerber files and schematics as well as STL files for printing/building the case. Consider this as preview. Please be patient, I am going at full speed.
 
-## Specs:
+##Specs
 
 - 3.2 inch LCD screen with 320x240 resolution with parallel interface to the RP2040
 - analog control stick, 3 buttons and on/off switch
@@ -53,7 +53,7 @@ Now, the device features a simple library which does the hardware handling. The 
 
 The whole library is built around Earle Philhower's Raspberry Pi Pico Arduino core (no further dependencies are involve). 
 
-## Core features:
+##Core features
 
 - screen: 16 bit and 8 bit (must choose at compile time) buffers, full and half resolution panel fitter (nearest neighbor and experimental linear filter)
 - fast blitter (using the RP2040's "interpolator") with zooming/rotation
@@ -61,7 +61,7 @@ The whole library is built around Earle Philhower's Raspberry Pi Pico Arduino co
 - sound library for sound output (8 bit PCM up to 22000 Hz) with four channels for mixing
 - font library with the ability to import true type fonts (FontEditor written by H. Reddmann)
 
-## Requirements
+##Requirements
 
 RAM
 
@@ -76,20 +76,24 @@ RAM
   - 1 state machine from PIO0
   - 1 DMA channel
 
-# Installation
+#Installation
 
 The library is meant to be used with Arduino. It is written in non-object-oriented C++.
 Place the *pplib* directory into your Arduino libraries folder. Next, install Earle Philhower's Raspberry Pi Pico Arduino core. 
 Next step is to setup the hardware (16 bit or 8 bit color depth, resolution, panel fitter). See setup.h for details. Your sketch has then to call `ppl_init()` right at the beginning. 
 That’s it. You may now build the examples. For further details see the examples.
 
-# Setup
+#Setup
+
+###Summary
 
 Some compile time hardware setup can be done in setup.h
 
+###Compiler switches
+
 `LCD_PIO_SPEED`
  
- This compiler switch defines the interface speed to the ILI9341 controller in MHz. The speed calculation is with respect to CPU speed
+This compiler switch defines the interface speed to the ILI9341 controller in MHz. The speed calculation is with respect to CPU speed. When changing CPU speed, `lcd_set_speed(freq)` has to be called again (see `lcdcom` below).
  
 `LCD_ROTATION`
 
@@ -107,16 +111,15 @@ This determines the color depth of the LCD interface. When set to `8`
 `LCD_DOUBLE_PIXEL_LINEAR`  // works with 16 bit mode only
 `LCD_DOUBLE_PIXEL_NEAREST`
 
-# Library description:
+# Library description
 
-## Types
+##pplib
 
-// TODO
+###Summary
 
+This is the wrapper for all other modules. Include `pplib.h` into your project to enable the use of the *Pico Hero* library.
 
-## Functions
-
-### pplib
+###Functions
 
 `int ppl_init()`
 
@@ -124,9 +127,37 @@ This function is called to initialize all the hardware on the *Pico Hero*. It’
 On success zero is returned otherwise an error code. If the LCD initialization fails, the bootloader is called.
 
 
-### lcdcom
+##lcdcom
+
+###Summary
 
 This is the hardware layer to interface with the LCD
+
+###Constants
+
+Error messages:
+
+`LCD_SUCCESS`
+
+No error
+
+`LCD_NOT_INIT`
+
+The LCD module has not been (properly) initialized.
+
+`LCD_DMA_ERR`
+
+Setting up the DMA failed.
+
+`LCD_PIO_ERR`
+
+Setting up the PIO failed.
+
+`LCD_UNDEFINED_ERR`
+
+Undefined error.
+
+###Functions
 
 `void lcd_set_speed(uint32_t freq)`
 This sets the LCD interface speed to the ILI9341. Specs state a max frequency of approx. 30 MHz however 100 MHz should work fine. You should not call this in the middle of program execution (it’s called from `ppl_init()`). When the CPU is being overclocked, the function is aware of that and the PIO speed adjusted accordingly.
@@ -160,11 +191,37 @@ Disables the tearing signal.
 Returns the current state of the tearing signal. 
 
 
-### gbuffers
+##gbuffers
+
+###Summary
 
 All graphics are rendered into objects called graphics buffers (gbuffer_t). Those contain the information about the image size and color depth as well as a pointer to the actual image data.
 The functions are overloaded to work with 8 bit as well as 16 bit color depths.
 The library does not support rendering graphics (e.g. a line or a circle) directly to the screen.
+
+###Constants
+
+`BUF_SUCCESS`
+
+No error.
+
+`BUF_ERR_NO_RAM`
+
+Insufficient RAM.
+
+###Types
+
+```
+typedef struct
+{
+    uint8_t bpp;
+    uint16_t width;
+	uint16_t height;
+	color_t* data;
+} gbuffer_t;
+```
+
+###Functions
 
 `uint16_t  gbuf_get_width(gbuffer8_t buf)`
 
@@ -187,9 +244,35 @@ Returns the data pointer of a buffer object.
 Frees the data memory of a buffer object.
 
 
-### blitter
+##blitter
+
+###Summary
 
 The blitter blits a source buffer to a destination buffer. The buffers may be different in dimensions but must be of the same color depth. There is only one (overloaded) function.
+
+###Constants
+
+`BLIT_NO_ALPHA`
+
+Blit an image without transparency.
+
+`BLIT_FLIP_NONE`
+
+Blit an image without flipping.
+
+`BLIT_FLIP_HORI`
+
+Blit an image flipping it horizontally.
+
+`BLIT_FLIP_VERT`
+
+Blit an image flipping it vertically.
+
+`BLIT_FLIP_ALL`
+
+Blit an image flipping it both horizontally and vertically.
+
+###Functions
 
 ```
 void blit_buf(coord_t kx,     // coordinates of upper left corner
@@ -247,7 +330,19 @@ void blit_buf(coord_t kx,     // x-coord where to blit the of CENTER of the imag
 Blits a buffer to another buffer at the position `kx`, `ky`, zooms it in horizontal direction with the factor of `zoom_x` in vertical direction with the factor of `zoom_y`. `flip` states whether to flip the image (use `BLIT_FLIP_HORI`, `BLIT_FLIP_VERT` and `BLIT_FLIP_ALL` to determine how to flip the image). Alpha states the transparent color (`BLIT_NO_ALPHA` for no transparency).
 Since this operation is accelerated by the use of the "interpolator", both width and height of the image size must be power of 2.
 
-### colors
+##colors
+
+###Summary
+
+The color modules helps converting color formats.
+
+###Types:
+
+`typedef color16_t color_t`
+
+`typedef color8_t color_t`
+
+###Functions
 
 Colors may be converted, composed or channels may be extracted using the following functions:
 
@@ -283,15 +378,78 @@ Returns the green component of a RGB565 color as a value ranging from 0..63
 
 Returns the blue component of a RGB565 color as a value ranging from 0..31
 
-### fonts
+##fonts
 
+###Summary
 
-### tile maps
+A small font drawing library is included. This library can do basic font drawing into graphics buffers. In order to import new fonts, please see `pplib_utils` repository.
 
-Tiles maps are used to build environments out of tiles (in order to save storage). Tile maps consist of two components: a tile map that states which tile has to be placed where. And the tile data containing the actual image information. If a tile is repeated multiple times, then memory has been saved.
+###Types
 
-Tile map objects (tile_map_t) contain an 8 bit array and that means there is a maximum number of 256 different tiles per map allowed. Every byte of the map array holds an number that represents a certain tile. A tile data object (tile_data_t) is very similar to a graphics buffer but also contains the number of tiles stored which allows multiple tiles to be contained in a single object. The tiles themselves may be of 8 or 16 bit color depth. A constraint introduced by the way the "interpolator" handles the lookup is that the width and the height of a tile must be a power of 2 as does the width and the height of the map. For example a map may be 128 by 64 tiles. And each of the tiles may be of the size 64 by 32 pixels. All tiles of a tile data object are of the same size.
+`typedef uint8_t font_t`
 
+###Functions
+
+`int font_get_width(font_t* font)`
+
+Returns the width of a font in pixels.
+
+`int font_get_height(font_t* font)`
+
+Returns the height of a font in pixels.
+
+`int font_get_char_width(char c, font_t* font)`
+
+Returns the width of a character in pixels.
+
+`int font_get_string_width(char* str, font_t* font)`
+
+Returns the width of a string in pixels.
+
+`void font_put_char(coord_t pos_x, coord_t pos_y, color_t col, char c, font_t* font, gbuffer_t dst)`
+
+Draws a single character of the font `font` to the coordinates `pos_x` and `pos_y` using the color `col` to the graphicsbuffer `dst`.
+
+`void font_write_string(coord_t pos_x, coord_t pos_y, color_t col, char* str, font_t* font, gbuffer_t dst)`
+
+Draws a string of characters of the font `font` to the coordinates `pos_x` and `pos_y` using the color `col` to the graphicsbuffer `dst`.
+
+`void font_write_string_centered(coord_t pos_x, coord_t y, color_t col, char* str, font_t* font, gbuffer_t dst)`
+
+Draws a horizintally centered string of characters of the font `font` to the coordinates `pos_x` and `pos_y` using the color `col` to the graphicsbuffer `dst`.
+
+##tile maps
+
+###Summary
+
+Tiles maps are used to build environments out of tiles (in order to save storage). Tile maps consist of two components: a tile map that defines which tile has to be placed where. And the tile data containing the actual image information. If a tile is repeated multiple times, then storage memory may be saved.
+
+Tile map objects (tile_map_t) contain an 8 bit array and that means there is a maximum number of 256 different tiles per map allowed. Every byte of the map array holds an number that represents a certain tile. A tile data object (tile_data_t) is very similar to a graphics buffer but also contains the number of tiles stored which allows multiple tiles to be contained in a single object. Tile map dimenstions need to be a power of 2 (e.g. 64 by 32).
+
+The tiles themselves may be of 8 or 16 bit color depth. A constraint introduced by the way the "interpolator" handles the lookup is that the width and the height of a tile must be a power of 2 as does the width and the height of the map. For example a map may be 128 by 64 tiles. And each of the tiles may be of the size 64 by 32 pixels. All tiles of a tile data object are of the same size. Tile width multiplied by tile height must not exceed 65536.
+
+###Types
+
+```
+typedef struct 
+{
+    uint16_t width;
+	uint16_t height;
+	color8_t* data;
+} tile_map_t;
+```
+
+```
+typedef struct 
+{
+    uint16_t width;
+    uint16_t height;
+    uint16_t num;	
+	gbuffer_t* image;
+} tile_data_t;
+```
+
+###Functions
 
 ```
 void tile_blit_mode7(coord_t kx,           // start in fb window x
@@ -336,9 +494,75 @@ This blits a tile map in top down style. Since the RP2040's "interpolator" does 
 `kx`, `ky`, `w` and `h` state the size of the image in the (frame)buffer. `px` and `py`  state the translation of the map (what part of the map you get to see) and `pivot_x` and `pivot_y` state the coordinated of the pivot point in case you want to rotate the map by the angle `rot`. `zoom_x` and `zoom_y` state the zoom factor in horizontal resp. vertical direction. `alpha` defines the color which is not being drawn (BLIT_NO_ALPHA for no transparency).  See *Pico Racer* example.
 
 
-### sound
+##sound
+
+###Summary
 
 This modules handles the playback of sounds. There are four sound channels which can be assigned buffers for playback. All currently playing buffers are mixed on the fly and sent via DMA to the PIO which then handles the PWM playback. The buffer format is a raw 8 bit PCM format. You need to specify the playback frequency using `snd_set_freq()`. All buffers play back with the same frequency and volume. The (master) volume can be set using `snd_set_vol(uint8_t vol)`. 
+
+###Constants
+
+`SND_NUM_BUFS`
+
+Default: 3
+
+Defines the maximum queue length of audio buffers (just the queue, user need to allocate storage)
+
+`SND_BUF_SIZE 1024`
+
+Default: 1024
+
+Defines the length of the internal audio buffer. There will be allocated two buffers with 2 bytes per sample so the default values takes up 4k RAM. The internal audio buffer is needed for mixing the channel as well as volume control.
+
+`SND_NUM_CHAN 4`
+
+Default: 4
+
+Defines the number of audio channels. Do not edit as there also have to be changes made to the PIO in order to not mess up the timing/playback frequency.
+
+`SND_CHAN_ALL`
+
+States that a command applies to all audio channels
+
+`SND_CHAN_N`
+
+States that a command applies to audio n (n = 0, 1, 2, 3)
+
+Errors:
+
+`SND_SUCCESS`
+
+No error
+
+`SND_CHAN_INVALID`
+
+An invalid channel has been given.
+
+`SND_NO_RAM`
+
+Insufficient RAM.
+
+`SND_NOT_INIT`
+
+The sound module has not been (properly) initialized.
+
+`SND_DMA_ERR`
+
+Setting up the DMA failed.
+
+`SND_PIO_ERR`
+
+Setting up the PIO failed.
+
+`SND_NO_FREE_BUF`
+
+Buffer queue is full.
+
+`SND_UNDEFINED_ERR`
+
+Undefined error.
+
+###Functions
 
 `int snd_enque_buf(uint8_t *ext_buf, uint32_t buffersize, uint8_t num_snd_channel, bool blocking)`
 

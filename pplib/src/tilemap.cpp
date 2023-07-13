@@ -156,7 +156,7 @@ void tile_blit_rot(coord_t kx,            // start in fb window x
 
       for (int x = start_x; x < end_x; ++x) {
           uint8_t t = *(uint8_t *) interp0->pop[2];
-          uint16_t c = (uint16_t) interp1->pop[2];
+          uint32_t c = (uint32_t) interp1->pop[2];
           color_t col = tile_set.image->data[t * tiles_ofs + c];
 		  if (col != alpha)
 			buf.data[x + y * buf_width] = col;
@@ -262,13 +262,13 @@ void tile_blit_mode7(coord_t kx,           // start in fb window x
   // TODO: revise
   uint32_t px32 = px * (1 << (BITS_FRACT - tiles_width_log));  // same as / tiles_width
   uint32_t py32 = py * (1 << (BITS_FRACT - tiles_height_log)); // same as / tiles_height
-  uint32_t pz32 = pz * (1 << BITS_FRACT);
+  uint32_t pz32 = (float) pz / 100. * (1 << BITS_FRACT);
  
   uint16_t fb_width = gbuf_get_width(buf);
  
   for (int y = start_y ; y < end_y ; ++y) {
     int32_t n = pz32 / (y - ky + 1);
-    int32_t s = 400 * n;  //TODO distance 
+    int32_t s = 400 * n;  //TODO distortion
     int32_t t2 = w * n;
     int32_t u = px32 +   t2 / 2  * rcos + s * rsin;
     int32_t v = py32 + (-t2 / 2) * rsin + s * rcos;
