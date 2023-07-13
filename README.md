@@ -12,25 +12,25 @@ own for some reasons:
 
 And this is what it looks like:
 
-![Pico Hero picture 1](https://raw.githubusercontent.com/fcipaq/picohero_pplib/main/images/front1.jpg)
-![Pico Hero picture 2](https://raw.githubusercontent.com/fcipaq/picohero_pplib/main/images/front3.jpg)
+![Pico Hero picture 1](images/front1.jpg)
+![Pico Hero picture 2](images/front3.jpg)
 
 Front view
 
-![Pico Hero picture 3](https://raw.githubusercontent.com/fcipaq/picohero_pplib/main/images/back.jpg)
+![Pico Hero picture 3](images/back.jpg)
 
 Back view
 
-![Pico Hero picture 4](https://raw.githubusercontent.com/fcipaq/picohero_pplib/main/images/top.jpg)
+![Pico Hero picture 4](images/top.jpg)
 
 
 Top view
 
-![Pico Hero picture 5](https://raw.githubusercontent.com/fcipaq/picohero_pplib/main/images/parts.jpg)
+![Pico Hero picture 5](images/parts.jpg)
 
 Parts (older version without SD card)
 
-![Pico Hero picture 6](https://raw.githubusercontent.com/fcipaq/picohero_pplib/main/images/emulator.jpg)
+![Pico Hero picture 6](images/emulator.jpg)
 
 *Pico Hero* running modified Sega Mega Drive emulator by bzhxx (https://github.com/bzhxx/gwenesis)
 
