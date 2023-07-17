@@ -1,5 +1,5 @@
 /*
- * pplib - a library for the PicoPal handheld
+ * pplib - a library for the Pico Held handheld
  *
  * Copyright (C) 2023 Daniel Kammer (daniel.kammer@web.de)
  *

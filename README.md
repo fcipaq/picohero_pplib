@@ -1,4 +1,4 @@
-# pplib - A library for the ~~Pico Pad~~ ~~Pico Hero~~ *PicoPal* (an open source handheld based on the Raspberry Pi Pico) for Arduino
+# pplib - A library for the ~~Pico Pad~~ ~~Pico Hero~~ ~~PicoPal~~ *Pico Held* (an open source handheld based on the Raspberry Pi Pico) for Arduino
 
 This is the result of a private project to build a handheld gaming device based on the
 *Raspberry Pi Pico*. I know there are a bunch of those out there but I wanted to design my
@@ -12,32 +12,34 @@ own for some reasons:
 
 And this is what it looks like:
 
-![Pico Pal picture 1](images/front1.jpg)
-![Pico Pal picture 2](images/front3.jpg)
+![Pico Held picture 1](images/front1.jpg)
+![Pico Held picture 2](images/front3.jpg)
 
 Front view
 
-![Pico Pal picture 3](images/back.jpg)
+![Pico Held picture 3](images/back.jpg)
 
 Back view
 
-![Pico Pal picture 4](images/top.jpg)
+![Pico Held picture 4](images/top.jpg)
 
 Top view
 
-![Pico Pal picture 5](images/parts.jpg)
+![Pico Held picture 5](images/parts.jpg)
 
 Parts (older version without SD card)
 
-![Pico Pal picture 6](images/emulator.jpg)
+![Pico Held picture 6](images/emulator.jpg)
 
-*Pico Pal* running modified Sega Mega Drive emulator by bzhxx (https://github.com/bzhxx/gwenesis)
+*Pico Held* running modified Sega Mega Drive emulator by bzhxx (https://github.com/bzhxx/gwenesis)
 
 Watch the introduction on [Youtube](https://youtu.be/RlWg1duhfp8).
 
-Examples are [here](https://github.com/fcipaq/picopal_examples).
+PCB design files, schematics and case STL/OBJ files can be found [here](https://github.com/fcipaq/picoheld_hardware). (TODO)
 
-Utilities can be found [here](https://github.com/fcipaq/picopal_utils/).
+Examples are [here](https://github.com/fcipaq/picoheld_examples).
+
+Utilities can be found [here](https://github.com/fcipaq/picoheld_utils/).
 
 Schematics/Gerber files yet to be uploaded.
 
@@ -52,7 +54,7 @@ Consider this as a preview, still in alpha stage.
 - dimensions: 136mm x 60mm x 12mm; weight: 100g including 600 mAh battery
 - optional charging circuitry when using a RPi Pico module without builtin charger.
 
-I originally intended to call the handheld *Pico Pad* – however a Czech company was a couple days faster.
+I originally intended to call the handheld *Pico Pad* – however a Czech company was a couple days faster. I then came up with the idea to name the device *Pico Hero* - which apparently is also the name of already existing game. That *Pico* namespace seems to be really, really crowded...
 
 Now, the device features a simple library which does the hardware handling. The library is for *Arduino* so you just need to put it in your libraries folder and can start developing right away.
 
@@ -127,13 +129,13 @@ This reduces the resolution using interpolation. The image will be fitted to the
 
 ### Summary
 
-This is the wrapper for all other modules. Include `pplib.h` into your project to enable the use of the *PicoPal* library.
+This is the wrapper for all other modules. Include `pplib.h` into your project to enable the use of the *Pico Held* library.
 
 ### Functions
 
 `int ppl_init()`
 
-This function is called to initialize all the hardware on the *PicoPal*. It’s supposed to be called right at the beginning of `setup()`. This also does the bootloader handling (press all three buttons when powering up the *PicoPal* to enter bootloader mode) – so it’s very important.
+This function is called to initialize all the hardware on the *Pico Held*. It’s supposed to be called right at the beginning of `setup()`. This also does the bootloader handling (press all three buttons when powering up the *Pico Held* to enter bootloader mode) – so it’s very important.
 On success zero is returned otherwise an error code. If the LCD initialization fails, the bootloader is called.
 
 
