@@ -1,4 +1,4 @@
-pplib - a simple SDK for the Pico Hero handheld
+pplib - a simple SDK for the PicoPal handheld
 
 Copyright (C) 2023 Daniel Kammer (daniel.kammer@web.de)
 

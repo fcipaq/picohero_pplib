@@ -1,4 +1,4 @@
-# pplib - A library for the ~~Pico Pad~~ *Pico Hero* (an open source handheld based on the Raspberry Pi Pico) for Arduino
+# pplib - A library for the ~~Pico Pad~~ ~~Pico Hero~~ *PicoPal* (an open source handheld based on the Raspberry Pi Pico) for Arduino
 
 This is the result of a private project to build a handheld gaming device based on the
 *Raspberry Pi Pico*. I know there are a bunch of those out there but I wanted to design my
@@ -12,36 +12,36 @@ own for some reasons:
 
 And this is what it looks like:
 
-![Pico Hero picture 1](images/front1.jpg)
-![Pico Hero picture 2](images/front3.jpg)
+![Pico Pal picture 1](images/front1.jpg)
+![Pico Pal picture 2](images/front3.jpg)
 
 Front view
 
-![Pico Hero picture 3](images/back.jpg)
+![Pico Pal picture 3](images/back.jpg)
 
 Back view
 
-![Pico Hero picture 4](images/top.jpg)
+![Pico Pal picture 4](images/top.jpg)
 
 Top view
 
-![Pico Hero picture 5](images/parts.jpg)
+![Pico Pal picture 5](images/parts.jpg)
 
 Parts (older version without SD card)
 
-![Pico Hero picture 6](images/emulator.jpg)
+![Pico Pal picture 6](images/emulator.jpg)
 
-*Pico Hero* running modified Sega Mega Drive emulator by bzhxx (https://github.com/bzhxx/gwenesis)
+*Pico Pal* running modified Sega Mega Drive emulator by bzhxx (https://github.com/bzhxx/gwenesis)
 
 Watch the introduction on [Youtube](https://youtu.be/RlWg1duhfp8).
 
-Examples are [here](https://github.com/fcipaq/picohero_examples).
+Examples are [here](https://github.com/fcipaq/picopal_examples).
 
-Utilities can be found [here](https://github.com/fcipaq/picohero_utils/).
+Utilities can be found [here](https://github.com/fcipaq/picopal_utils/).
 
 Schematics/Gerber files yet to be uploaded.
 
-Consider this as preview, still in alpha stage.
+Consider this as a preview, still in alpha stage.
 
 ## Specs
 
@@ -49,8 +49,8 @@ Consider this as preview, still in alpha stage.
 - analog control stick, 3 buttons and on/off switch
 - 3W speaker
 - micro SD card slot tied via SPI (for space constraints it’s push/pull so a it’s a little fiddly to remove the SD card) 
-- dimenstions: 136mm x 60mm x 12mm; weight: 100g including 600 mAh battery
-- optional charging circuitry when using a RPi Pico module without charger logic.
+- dimensions: 136mm x 60mm x 12mm; weight: 100g including 600 mAh battery
+- optional charging circuitry when using a RPi Pico module without builtin charger.
 
 I originally intended to call the handheld *Pico Pad* – however a Czech company was a couple days faster.
 
@@ -113,8 +113,13 @@ States the screen orientation. Possible values are:
 
 This determines the color depth of the LCD interface. When set to `8`  
 
-`LCD_DOUBLE_PIXEL_LINEAR`  // works with 16 bit mode only
+`LCD_DOUBLE_PIXEL_LINEAR`
+
+This reduces the resolution using pixel doubling (i.e. 160 x 120 pixels) The image will be fitted to the screen using nearest neighbor. Since the PIO does most of the hard work this has virtually zero impact on CPU performance.
+
 `LCD_DOUBLE_PIXEL_NEAREST`
+
+This reduces the resolution using interpolation. The image will be fitted to the screen using linear interpolation. The interpolation is done by the CPU so this has a major impact on performance. There might be a way to make the "interpolator" do some of the hard work. However I wasn't able to convice myself that anybody would want linear interpolation on such a device. If someone can convince me otherwise may I can find a more CPU efficient way to do this. Until then consider this a proof-of-concept-feature. Also this currently works buggy.
 
 # Library description
 
@@ -122,21 +127,21 @@ This determines the color depth of the LCD interface. When set to `8`
 
 ### Summary
 
-This is the wrapper for all other modules. Include `pplib.h` into your project to enable the use of the *Pico Hero* library.
+This is the wrapper for all other modules. Include `pplib.h` into your project to enable the use of the *PicoPal* library.
 
 ### Functions
 
 `int ppl_init()`
 
-This function is called to initialize all the hardware on the *Pico Hero*. It’s supposed to be called right at the beginning of `setup()`. This also does the bootloader handling (press all three buttons when powering up the *Pico Hero* to enter bootloader mode) – so it’s very important.
+This function is called to initialize all the hardware on the *PicoPal*. It’s supposed to be called right at the beginning of `setup()`. This also does the bootloader handling (press all three buttons when powering up the *PicoPal* to enter bootloader mode) – so it’s very important.
 On success zero is returned otherwise an error code. If the LCD initialization fails, the bootloader is called.
 
 
-##lcdcom
+## lcdcom
 
 ### Summary
 
-This is the hardware layer to interface with the LCD
+This is the hardware layer to interface with the LCD.
 
 ### Constants
 
@@ -200,11 +205,13 @@ Returns the current state of the tearing signal.
 
 ### Summary
 
-All graphics are rendered into objects called graphics buffers (gbuffer_t). Those contain the information about the image size and color depth as well as a pointer to the actual image data.
+All graphics are rendered into objects called graphics buffers (gbuffer_t) - some might prefer the term "canvas". Those contain the information about the image size and color depth as well as a pointer to the actual image data.
 The functions are overloaded to work with 8 bit as well as 16 bit color depths.
-The library does not support rendering graphics (e.g. a line or a circle) directly to the screen.
+The library does *not* support rendering graphics directly to the screen (e.g. a line or a circle).
 
 ### Constants
+
+Error messages:
 
 `BUF_SUCCESS`
 
@@ -238,11 +245,11 @@ Returns the height of a buffer
 
 `int gbuf_alloc(gbuffer8_t* buf, uint16_t width, uint16_t height, uint8_t colors) `
 
-Allocates memory to an already existing graphics buffer object. Returns `BUF_ERR_NO_RAM` on failure otherwise `BUF_SUCCESS`
+Allocates memory to an already existing graphics buffer object. Returns `BUF_ERR_NO_RAM` on failure otherwise `BUF_SUCCESS`.
 
-`uint8_t*  gbuf_get_dat_ptr(gbuffer8_t buf)`
+`uint8_t* gbuf_get_dat_ptr(gbuffer8_t buf)`
 
-Returns the data pointer of a buffer object.
+Returns the pointer to the image data of a buffer object.
 
 `void gbuf_free(gbuffer8_t buf) `
 
@@ -317,8 +324,8 @@ OOOOOOOOOOOOOOOO
 OOOOOOOOOOOOOOOO
 ```
 
-This is somewhat a tradeoff between memory usage and  performance. Images are therefore best stored in flash.
-Both width and height of the image size must be power of 2. Using square dimensions is advised to prevent fold artifacts, however this consumes more storage.
+This is somewhat a tradeoff between memory usage and performance. Images are therefore best stored in flash.
+Both width and height of the image size must be a power of 2. Using square dimensions is advised to prevent fold artifacts, however this consumes more storage.
 
 
 ```
@@ -347,28 +354,30 @@ The color modules helps converting color formats.
 
 `typedef color8_t color_t`
 
+(Depending on colordepth determined at compile time)
+
 ### Functions
 
 Colors may be converted, composed or channels may be extracted using the following functions:
 
 `color16_t rgb_col_888_565(uint8_t r, uint8_t g, uint8_t b)`
 
-Returns the color in 16 bit machine readable format when given r g and b values in 24 bits. (R-G-B 8-8-8)
+Returns the color in 16 bit machine readable format when given r, g and b values in 24 bits. (R-G-B 8-8-8)
 Ranges - r: 0..255, g: 0..255 and b: 0..255
 
 `color8_t rgb_col_888_332(uint8_t r, uint8_t g, uint8_t b)`
 
-Returns the color in 8 bit in machine readable format when given r g and b values in 24 bits. (R-G-B 8-8-8)
+Returns the color in 8 bit machine readable format when given r, g and b values in 24 bits. (R-G-B 8-8-8)
 Ranges - r: 0..255, g: 0..255 and b: 0..255
    
 `color16_t rgb_col_565_565(uint8_t r, uint8_t g, uint8_t b)`
 
-Returns the color in 16 bit machine readable format when given r g and b values in 16 bits. R-G-B 5-6-5
+Returns the color in 16 bit machine readable format when given r, g and b values in 16 bits. R-G-B 5-6-5
 Ranges - r: 0..31, g: 0..63 and b: 0..31
    
 `color8_t rgb_col_332_332(uint8_t r, uint8_t g, uint8_t b)`
 
-Returns the color in 8 bit machine readable format when given r g and b values in 8 bits. (R-G-B 3-3-2)
+Returns the color in 8 bit machine readable format when given r, g and b values in 8 bits. (R-G-B 3-3-2)
 Ranges - r: 0..7, g: 0..7 and b: 0..3
 
 `uint8_t rgb_col_565_red(color16_t col)`
@@ -585,6 +594,8 @@ Returns the number of buffers waiting (0 means idle)
 
 Cancels playback on given channel (`SND_CHAN_ALL` cancels all playback)
 
+Yet to be implemented. (TODO)
+
 `int snd_set_freq(uint32_t freq)`
 
 Sets the playback frequency.
@@ -608,4 +619,8 @@ Sets the volume level (from 0 to 5)
 
 ## power
 
+//TODO
+
 ## controls
+
+//TODO
