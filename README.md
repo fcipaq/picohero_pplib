@@ -35,13 +35,13 @@ Parts (older version without SD card)
 
 Watch the introduction on [Youtube](https://youtu.be/RlWg1duhfp8).
 
-PCB design files, schematics and case STL/OBJ files can be found [here](https://github.com/fcipaq/picoheld_hardware). (TODO)
+PCB design files, schematics and case STL/OBJ files can be found [here](https://github.com/fcipaq/picoheld_hardware).
+
+Schematics/Gerber files yet to be uploaded.  (TODO)
 
 Examples are [here](https://github.com/fcipaq/picoheld_examples).
 
 Utilities can be found [here](https://github.com/fcipaq/picoheld_utils/).
-
-Schematics/Gerber files yet to be uploaded.
 
 Consider this as a preview, still in alpha stage.
 
@@ -51,10 +51,10 @@ Consider this as a preview, still in alpha stage.
 - analog control stick, 3 buttons and on/off switch
 - 3W speaker
 - micro SD card slot tied via SPI (for space constraints it’s push/pull so a it’s a little fiddly to remove the SD card) 
-- dimensions: 136mm x 60mm x 12mm; weight: 100g including 600 mAh battery
+- dimensions: 136mm x 60mm x 12mm; weight: 100g including a 600 mAh battery
 - optional charging circuitry when using a RPi Pico module without builtin charger.
 
-I originally intended to call the handheld *Pico Pad* – however a Czech company was a couple days faster. I then came up with the idea to name the device *Pico Hero* - which apparently is also the name of already existing game. That *Pico* namespace seems to be really, really crowded...
+I originally intended to call the handheld *Pico Pad* – however a Czech company was a couple days faster. I then came up with the idea to name the device *Pico Hero* - which apparently is also the name of already existing game. And finally *Pico Pal* appears to be the name of a crowdfunding project... That *Pico* namespace seems to be really, really crowded...
 
 Now, the device features a simple library which does the hardware handling. The library is for *Arduino* so you just need to put it in your libraries folder and can start developing right away.
 
@@ -113,7 +113,7 @@ States the screen orientation. Possible values are:
 
 `LCD_COLORDEPTH`
 
-This determines the color depth of the LCD interface. When set to `8`  
+This determines the color depth of the LCD interface. Possible values are either `8` or `16`.
 
 `LCD_DOUBLE_PIXEL_LINEAR`
 
@@ -613,11 +613,20 @@ Sets the volume level (from 0 to 5)
 ### Functions
 
 `void draw_pixel(coord_t x, coord_t y, color_t color, gbuffer_t dst)`
+
 `void draw_line(coord_t x1, coord_t y1, coord_t x2, coord_t y2, color_t color, gbuffer_t dst)`
+
 `void draw_rect(coord_t x1, coord_t y1, coord_t x2, coord_t y2, color_t color, gbuffer_t dst)`
+
 `void draw_rect_fill(coord_t x1, coord_t y1, coord_t x2, coord_t y2, color_t color, gbuffer_t dst)`
+
 `void draw_circle(coord_t x1, coord_t y1, uint16_t radius, color_t color, gbuffer_t dst)`
+
+(TODO: implement)
+
 `void draw_circle_fill(coord_t x1, coord_t y1, uint16_t radius, color_t color, gbuffer_t dst)`
+
+(TODO: implement)
 
 ## power
 
