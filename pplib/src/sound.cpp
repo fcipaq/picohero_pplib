@@ -199,6 +199,12 @@ void snd_prepare_buf() {
     for (uint32_t h = 0; h < min_len; h++)
       snd_buf[num_cur_snd_buf][h + snd_buf_pos[num_cur_snd_buf]] = 0;
 
+#ifdef SND_SINGLE_CHANNEL
+    for (int i = 0; i < SND_NUM_CHAN; i++)
+      if (sem_available(&(snd_channel[i].num_free_bufs)) != SND_NUM_BUFS)
+        for (uint32_t h = 0; h < min_len; h++)
+          snd_buf[num_cur_snd_buf][h + snd_buf_pos[num_cur_snd_buf]] += buf_tmp[i][h + snd_channel[i].snd_data_pos[snd_channel[i].num_cur_snd_data]] / snd_level * 2;
+#else
     for (int i = 0; i < SND_NUM_CHAN; i++)
       if (sem_available(&(snd_channel[i].num_free_bufs)) != SND_NUM_BUFS) {
         for (uint32_t h = 0; h < min_len; h++)
@@ -207,6 +213,7 @@ void snd_prepare_buf() {
         for (uint32_t h = 0; h < min_len; h++)
           snd_buf[num_cur_snd_buf][h + snd_buf_pos[num_cur_snd_buf]] += 127 / snd_level;
       }
+#endif
 
     // check if channels still have more buffers to be played
     for (int i = 0; i < SND_NUM_CHAN; i++)
@@ -333,7 +340,11 @@ int snd_set_freq(uint32_t freq) {
   uint32_t fcpu = clock_get_hz(clk_sys);
 
   // 133 MHz delivers 44 kHz sound output @ full speed
+#ifdef SND_SINGLE_CHANNEL
+  freq *= 1500;
+#else
   freq *= 3022;
+#endif
 
   uint16_t clock_div = fcpu / freq;
   uint16_t fract_div = (uint16_t)(((float)fcpu / (float)freq - (float)clock_div) * 256.0);
@@ -371,7 +382,11 @@ bool snd_pio_init() {
 
   // set ISR (containing the PWM period) and
   // put value to the FIFO
+#ifdef SND_SINGLE_CHANNEL
+  pio_sm_put_blocking(snd_pio, snd_pio_sm, 256 * 2);
+#else
   pio_sm_put_blocking(snd_pio, snd_pio_sm, 256 * SND_NUM_CHAN);
+#endif
   pio_sm_exec(snd_pio, snd_pio_sm, pio_encode_pull(false, false));
   pio_sm_exec(snd_pio, snd_pio_sm, pio_encode_out(pio_isr, 32));
 

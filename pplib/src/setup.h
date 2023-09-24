@@ -32,16 +32,20 @@
 // 0 = 0° (portrait), 1 = 90° (landscape), 2 = 180° (portrait), 3 = 270° (landscape)
 #define LCD_ROTATION 1
 
-/* ---------------------- color depth ----------------------*/
+/* --------------------------- color depth ---------------------------*/
 // currently supported are 8 bits and 16 bits of colors
 #define LCD_COLORDEPTH 8
 
-/* ----------------- pixel doubling / panel fitting -----------------*/
+/* ------------------ pixel doubling / panel fitting -----------------*/
 // please choose 1 or 0 fitters
 //#define LCD_DOUBLE_PIXEL_LINEAR  // works with 16 bit mode only
 #define LCD_DOUBLE_PIXEL_NEAREST
 
-/* ========================= sanity check ========================= */
+/* --------------------------- sound output --------------------------*/
+// Compiles the library with single audio channel support only (no mixing possible, experimental)
+//#define SND_SINGLE_CHANNEL
+
+/* ========================== sanity check ========================== */
 #if LCD_COLORDEPTH!=8 && LCD_COLORDEPTH!=16
 #error Please choose a valid color depth
 #endif

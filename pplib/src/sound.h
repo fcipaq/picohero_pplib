@@ -30,7 +30,11 @@
 #define SND_BUF_SIZE 1024
 
 // channel definitions
-#define SND_NUM_CHAN 4 // CAUTION: SND_NUM_CHAN depending on clock frequency => DO NOT JUST EDIT
+#ifdef SND_SINGLE_CHANNEL
+  #define SND_NUM_CHAN 1 // CAUTION: SND_NUM_CHAN depending on clock frequency => DO NOT JUST EDIT
+#else
+  #define SND_NUM_CHAN 4 // CAUTION: SND_NUM_CHAN depending on clock frequency => DO NOT JUST EDIT
+#endif
 #define SND_CHAN_ALL 255
 #define SND_CHAN_0 0
 #define SND_CHAN_1 1

@@ -123,6 +123,10 @@ This reduces the resolution using pixel doubling (i.e. 160 x 120 pixels) The ima
 
 This reduces the resolution using interpolation. The image will be fitted to the screen using linear interpolation. The interpolation is done by the CPU so this has a major impact on performance. There might be a way to make the "interpolator" do some of the hard work. However I wasn't able to convice myself that anybody would want linear interpolation on such a device. If someone can convince me otherwise may I can find a more CPU efficient way to do this. Until then consider this a proof-of-concept-feature. Also this currently works buggy.
 
+`SND_SINGLE_CHANNEL`
+
+Defining this switch disables channel mixing. You then only have a single but channel. This single channel may output at a higher volume and be configures more flexible for example in terms of sampling and output frequency. This is an experimental feature. (Because this library was created assuming that you create games that always use multiple sound channels.)
+
 # Library description
 
 ## pplib
