@@ -27,7 +27,7 @@
 
 /* ---------------------- color depth ----------------------*/
 // currently supported are 8 bits and 16 bits of colors
-#define LCD_COLORDEPTH (16)
+#define LCD_COLORDEPTH (8)
 #ifndef LCD_COLORDEPTH
 #define LCD_COLORDEPTH (8)
 #endif
