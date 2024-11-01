@@ -35,9 +35,7 @@ Parts (older version without SD card)
 
 Watch the introduction on [Youtube](https://youtu.be/RlWg1duhfp8).
 
-PCB design files, schematics and case STL/OBJ files can be found [here](https://github.com/fcipaq/picoheld_hardware).
-
-Schematics/Gerber files yet to be uploaded.  (TODO)
+PCB design files (Gerber), schematics and case STL/OBJ files can be found [here](https://github.com/fcipaq/picoheld_hardware).
 
 Examples are [here](https://github.com/fcipaq/picoheld_examples).
 
@@ -352,9 +350,9 @@ Since this operation is accelerated by the use of the "interpolator", both width
 
 ### Summary
 
-The color modules helps converting color formats.
+The color module helps converting color formats.
 
-### Types:
+### Types
 
 `typedef color16_t color_t`
 
@@ -639,3 +637,6 @@ Sets the volume level (from 0 to 5)
 ## controls
 
 //TODO
+
+# credits
+

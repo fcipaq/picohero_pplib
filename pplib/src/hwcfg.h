@@ -21,6 +21,231 @@
 #ifndef HWCFG_H
 #define HWCFG_H
 
+// 0 = dev board      (protoss) - no longer exists
+// 1 = old prototype  (marble white) - no longer exists
+// 2 = new prototype  (Leo) - no longer exists
+// 3 = RC1            (Joerg)
+// 4 = RC2            (Dev)
+// 5 = RC3            (Final version - so I thought)
+// 6 = IPS            (IPS display)
+
+#ifndef PPL_CONFIG_NO
+#define PPL_CONFIG_NO 6
+#endif
+
+#if PPL_CONFIG_NO==0
+// ================================== CONFIG 0 Board ====================================================
+/*----------------- buttons assignment --------------- */
+#define BUTTON_PULL_MODE INPUT_PULLDOWN
+#define BUTTON_PRESSED HIGH
+
+#define PIN_ANALOG_X  26
+#define PIN_ANALOG_Y  27
+
+#define PIN_BUTTON_1  19
+#define PIN_BUTTON_2  20
+#define PIN_BUTTON_3  18
+#define PIN_BUTTON_4  18
+
+/* ------------------------ Power management pins ------------------------*/
+#define PIN_BAT_ADC   29
+//#define BAT_PIN_SRC   24
+
+/* ------------------------ Sound assignment ------------------------*/
+#define PIN_SND       15 
+//LED_BUILTIN
+
+/* ------------------------ LCD pin assignment ------------------------*/
+#define PIN_LCD_BL_PWM 14
+
+#define PIN_LCD_DC    1    // data/command control pin
+#define PIN_LCD_WR    0    // clock
+#define PIN_LCD_RST   2    // reset pin
+#define PIN_LCD_TE    16    // tearing pin (DUMMY, no tearing pin is connected on "Leo")
+
+// Note: the data pins are PIO hardware configured and
+// driven and need to be in consecutive order
+#define PIN_LCD_D0    3     // 1st of the 8 data pins
+
+/* ---------------------- TFT driver ----------------------*/
+#define LCD_DRIVER_ILI9341
+#include "hardware/lcd_drv/ili9341_drv.h"
+
+
+#elif PPL_CONFIG_NO==2
+// ================================== CONFIG 2 (2nd prototype, Leo ) ====================================================
+/*----------------- buttons assignment --------------- */
+#define BUTTON_PULL_MODE INPUT_PULLDOWN
+#define BUTTON_PRESSED HIGH
+
+#define PIN_ANALOG_X  26
+#define PIN_ANALOG_Y  27
+
+#define PIN_BUTTON_1  19
+#define PIN_BUTTON_2  20
+#define PIN_BUTTON_3  18
+#define PIN_BUTTON_4  18
+
+/* ------------------------ Power management pins ------------------------*/
+#define PIN_BAT_ADC   29
+//#define BAT_PIN_SRC   24
+
+/* ------------------------ Sound assignment ------------------------*/
+#define PIN_SND       1 
+//LED_BUILTIN
+
+/* ------------------------ LCD pin assignment ------------------------*/
+#define PIN_LCD_BL_PWM 14
+
+#define PIN_LCD_DC    0    // data/command control pin
+#define PIN_LCD_WR    15    // clock
+#define PIN_LCD_RST   5    // reset pin
+#define PIN_LCD_TE    2    // tearing pin (DUMMY, no tearing pin is connected on "Leo")
+
+// Note: the data pins are PIO hardware configured and
+// driven and need to be in consecutive order
+#define PIN_LCD_D0    6     // 1st of the 8 data pins
+
+/* ---------------------- TFT driver ----------------------*/
+#define LCD_DRIVER_ILI9341
+#include "hardware/lcd_drv/ili9341_drv.h"
+
+
+#elif PPL_CONFIG_NO==3
+// ================================== CONFIG 3 (RC1) ====================================================
+/*----------------- buttons assignment --------------- */
+#define BUTTON_PULL_MODE INPUT_PULLDOWN
+#define BUTTON_PRESSED HIGH
+
+#define PIN_ANALOG_X  26
+#define PIN_ANALOG_Y  27
+
+#define PIN_BUTTON_1  19
+#define PIN_BUTTON_2  20
+#define PIN_BUTTON_3  18
+#define PIN_BUTTON_4  18
+
+/* ------------------------ Power management pins ------------------------*/
+#define PIN_BAT_ADC   29
+//#define BAT_PIN_SRC   24
+
+/* ------------------------ Sound assignment ------------------------*/
+#define PIN_SND       0 
+//LED_BUILTIN
+
+/* ------------------------ LCD pin assignment ------------------------*/
+#define PIN_LCD_BL_PWM 14
+
+#define PIN_LCD_TE    2    // tearing pin
+#define PIN_LCD_DC    3    // data/command control pin
+#define PIN_LCD_WR    4    // clock
+#define PIN_LCD_RST   5    // reset pin
+
+// Note: the data pins are PIO hardware configured and
+// driven and need to be in consecutive order
+#define PIN_LCD_D0    6     // 1st of the 8 data pins
+
+/* ---------------------- TFT driver ----------------------*/
+#define LCD_DRIVER_ILI9341
+#include "hardware/lcd_drv/ili9341_drv.h"
+
+
+#elif PPL_CONFIG_NO==4
+// ================================== CONFIG 4 (RC2) ====================================================
+/*----------------- buttons assignment --------------- */
+#define BUTTON_PULL_MODE INPUT_PULLDOWN
+#define BUTTON_PRESSED HIGH
+
+#define PIN_ANALOG_X  26
+#define PIN_ANALOG_Y  27
+
+#define PIN_BUTTON_1  22
+#define PIN_BUTTON_2  28
+#define PIN_BUTTON_3  21
+
+/* ------------------------ Power management pins ------------------------*/
+#define PIN_BAT_ADC   29
+//#define BAT_PIN_SRC   24
+
+/* ------------------------ Sound assignment ------------------------*/
+#define PIN_SND       0 
+//LED_BUILTIN
+
+/* ------------------------ LCD pin assignment ------------------------*/
+#define PIN_LCD_BL_PWM 14
+
+#define PIN_LCD_TE    2    // tearing pin
+#define PIN_LCD_DC    3    // data/command control pin
+#define PIN_LCD_WR    4    // clock
+#define PIN_LCD_RST   5    // reset pin
+
+// Note: the data pins are PIO hardware configured and
+// driven and need to be in consecutive order
+#define PIN_LCD_D0    6     // 1st of the 8 data pins
+
+// SD pins
+#define PIN_SD_MISO       16
+#define PIN_SD_MOSI       19
+#define PIN_SD_SCK        18
+#define PIN_SD_CS         20
+
+/* ---------------------- TFT driver ----------------------*/
+#define LCD_DRIVER_ILI9341
+#include "hardware/lcd_drv/ili9341_drv.h"
+
+
+#elif PPL_CONFIG_NO==5
+// ================================== CONFIG 5 ====================================================
+/*----------------- buttons assignment --------------- */
+#define BUTTON_PULL_MODE INPUT_PULLDOWN
+#define BUTTON_PRESSED HIGH
+
+#define PIN_ANALOG_X  26
+#define PIN_ANALOG_Y  27
+
+#define PIN_BUTTON_1  21
+#define PIN_BUTTON_2  22
+#define PIN_BUTTON_3  20
+
+/* ------------------------ Power management pins ------------------------*/
+#define PIN_BAT_ADC     29
+//#define BAT_PIN_SRC   24
+
+/* ------------------------ Sound assignment ------------------------*/
+#define PIN_SND         0 
+
+/* --------------------------- LCD settings ---------------------------*/
+// LCD_PIO_SPEED defines the PIO speed (in MHz)
+// Framerate is calculated as follows: approx. 3.3 fps / MHz
+// For a LCD_PIO_SPEED of 66 MHz that means max. 216 fps@66MHz.
+// A frequency above 120 MHz is not recommended.
+// ILI9341 datasheet states a max. clock frequency of 30 MHz.
+#define LCD_PIO_SPEED  120
+
+/* ------------------------ LCD pin assignment ------------------------*/
+#define PIN_LCD_BL_PWM 14
+
+#define PIN_LCD_TE      2    // tearing pin
+#define PIN_LCD_DC      3    // data/command control pin
+#define PIN_LCD_WR      4    // clock
+#define PIN_LCD_RST     5    // reset pin
+
+// Note: the data pins are PIO hardware configured and
+// driven and need to be in consecutive order
+#define PIN_LCD_D0      6     // 1st of the 8 data pins
+
+// SD pins
+#define PIN_SD_MISO    16
+#define PIN_SD_MOSI    19
+#define PIN_SD_SCK     18
+#define PIN_SD_CS      17
+
+/* ---------------------- TFT driver ----------------------*/
+#define LCD_DRIVER_ILI9341
+#include "hardware/lcd_drv/ili9341_drv.h"
+
+#elif PPL_CONFIG_NO==6
+// ================================== CONFIG 6 ====================================================
 /*----------------- buttons assignment --------------- */
 #define BUTTON_PULL_MODE INPUT_PULLDOWN
 #define BUTTON_PRESSED HIGH
@@ -39,6 +264,15 @@
 /* ------------------------ Sound assignment ------------------------*/
 #define PIN_SND       0 
 
+/* --------------------------- LCD settings ---------------------------*/
+// LCD_PIO_SPEED defines the PIO speed (in MHz)
+// Framerate is calculated as follows: approx. 3.3 fps / MHz
+// For a LCD_PIO_SPEED of 33 MHz that means max. 108 fps@33MHz.
+// 33 MHz seems to be the absolute maximum for stable operation.
+// ST7789 datasheet states a max. clock frequency of 15 MHz (i.e. low, then high = 1 cycle)
+// ST7789 appears to be far less tolerant towards overclocking than the ILI9341
+#define LCD_PIO_SPEED 33
+
 /* ------------------------ LCD pin assignment ------------------------*/
 #define PIN_LCD_BL_PWM 14
 
@@ -47,18 +281,20 @@
 #define PIN_LCD_WR    4    // clock
 #define PIN_LCD_RST   5    // reset pin
 
-// Note: the data pins are PIO hardware configured and driven
-// and need to be in consecutive order
+// Note: the data pins are PIO hardware configured and
+// driven and need to be in consecutive order
 #define PIN_LCD_D0    6     // 1st of the 8 data pins
 
 // SD pins
+#define PIN_SD_MISO       16
+#define PIN_SD_MOSI       19
 #define PIN_SD_SCK        18
 #define PIN_SD_CS         17
-#define PIN_SD_MOSI       19
-#define PIN_SD_MISO       16
 
 /* ---------------------- TFT driver ----------------------*/
-#define LCD_DRIVER_ILI9341
-#include "lcd_drv/ili9341_drv.h"
+#define LCD_DRIVER_ST7789
+#include "hardware/lcd_drv/st7789_drv.h"
+
+#endif  // CONFIG SELECTION
 
 #endif //HWCFG_H

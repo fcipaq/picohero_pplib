@@ -23,30 +23,58 @@
 
 /* ========================== includes ========================== */
 // HAL
-#include <lcdcom.h>
-#include <sound.h>
-#include <controls.h>
-#include <power.h>
-#include <setup.h>
-
-// Bootloader
-#include <bl_menu.h>
+#include "hardware/lcd_if/lcdcom.h"
+#include "hardware/sound/sound.h"
+#include "hardware/controls/controls.h"
+#include "hardware/power/power.h"
+#include "hardware/bootloader/bootloader.h"
+#include "setup.h"
 
 // Graphics
-#include <gbuffers.h>
-#include <colors.h>
-#include <primitives.h>
-#include <fonts.h>
-#include <blitter.h>
-#include <tilemap.h>
+#include "graphics/gbuffers.h"
+#include "graphics/colors.h"
+#include "graphics/primitives.h"
+#include "graphics/blitter.h"
+#include "graphics/tilemap.h"
+#include "fonts/fonts.h"
 
 /* ======================== definitions ========================= */
+
+#define PPL_VERSION 241101
 
 // error messages
 #define PPL_SUCCESS           0
 #define PPL_UNKNOWN_ERROR    -1
 
-/* ====================== function declarations ====================== */
-int ppl_init();
+/* ====================== init ====================== */
+int ppl_init() {
+  ctrl_init();
+  
+  bool bl_req = bl_check_selection();
+
+  if (bl_req)
+    bl_launch_bl();
+
+  if (lcd_init() != LCD_SUCCESS)
+    return PPL_UNKNOWN_ERROR;
+
+/*
+  if ((lcd_init() != LCD_SUCCESS) && (!bl_req))
+    return PPL_UNKNOWN_ERROR;
+
+  if (bl_req)
+    bl_menu();
+*/
+
+#ifndef PPL_SND_INIT_MANUAL
+  if (snd_init() != SND_SUCCESS)
+    return PPL_UNKNOWN_ERROR;
+#endif
+
+  if (pwr_init() != 0)
+    return PPL_UNKNOWN_ERROR;
+  
+  return PPL_SUCCESS;
+}
 
 #endif // BLITTER
